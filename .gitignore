@@ -198,3 +198,5 @@ targets/
 png_images/
 labels/
 images/
+
+uv.lock
