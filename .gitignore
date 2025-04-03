@@ -172,3 +172,29 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+# Checkpoints und Modellgewichte
+checkpoints/
+*.ckpt
+*.pth
+*.h5
+
+# Große Datendateien
+data/
+*.tif
+*.tiff
+*.npy
+*.csv
+
+# TensorBoard Logs
+runs/
+logs/
+
+# xView 2 spezifisch
+*.json
+predictions/
+results/
+targets/ 
+png_images/
+labels/
+images/
