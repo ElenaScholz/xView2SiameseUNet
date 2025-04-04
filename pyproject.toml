@@ -1,5 +1,5 @@
 [project]
-name = "course_material_04_geo_oma24"
+name = "xView2-Assignment"
 version = "0.1.0"
 description = "Intro to Pytorch based Deep Learning pipelines."
 readme = "README.md"
