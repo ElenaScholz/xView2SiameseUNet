@@ -3,6 +3,7 @@ import torch
 import numpy as np
 from collections import Counter
 from tqdm import tqdm  # Optional, für Fortschrittsanzeige
+import json
 
 def calculate_class_counts(dataset):
     pre_class_counts = Counter()
@@ -31,19 +32,21 @@ def calculate_class_counts(dataset):
             post_class_counts[int(cls)] += np.sum(post_mask == cls)
     
     return pre_class_counts, post_class_counts
+    
+import json
 
 def save_class_counts(pre_counts, post_counts, filepath):
     data = {
-        'pre': dict(pre_counts),
-        'post': dict(post_counts)
+        'pre': {k: str(v) for k, v in pre_counts.items()},
+        'post': {k: str(v) for k, v in post_counts.items()}
     }
     with open(filepath, 'w') as f:
-        json.dump(data, f)
+        json.dump(data, f, indent=2)  # optional schön formatiert
 
 def load_class_counts(filepath):
     with open(filepath, 'r') as f:
         data = json.load(f)
-    return Counter({int(k): v for k, v in data['pre'].items()}), Counter({int(k): v for k, v in data['post'].items()})
+    return Counter({str(k): v for k, v in data['pre'].items()}), Counter({int(k): v for k, v in data['post'].items()})
 
 from collections import Counter
 
@@ -84,7 +87,7 @@ def load_sample_weights(filepath):
     return torch.load(filepath)
 
 # Create weighted DataLoader
-def create_weighted_dataloader(dataset, batch_size=32, num_workers=4, sample_weights):
+def create_weighted_dataloader(dataset, sample_weights, batch_size=32, num_workers=4):
     # Create weighted sampler
     sampler = WeightedRandomSampler(
         weights=sample_weights,
