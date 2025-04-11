@@ -32,6 +32,19 @@ def calculate_class_counts(dataset):
     
     return pre_class_counts, post_class_counts
 
+def save_class_counts(pre_counts, post_counts, filepath):
+    data = {
+        'pre': dict(pre_counts),
+        'post': dict(post_counts)
+    }
+    with open(filepath, 'w') as f:
+        json.dump(data, f)
+
+def load_class_counts(filepath):
+    with open(filepath, 'r') as f:
+        data = json.load(f)
+    return Counter({int(k): v for k, v in data['pre'].items()}), Counter({int(k): v for k, v in data['post'].items()})
+
 from collections import Counter
 
 def calculate_class_weights(class_counts):
@@ -69,3 +82,24 @@ def save_sample_weights(weights, filepath):
 
 def load_sample_weights(filepath):
     return torch.load(filepath)
+
+# Create weighted DataLoader
+def create_weighted_dataloader(dataset, batch_size=32, num_workers=4, sample_weights):
+    # Create weighted sampler
+    sampler = WeightedRandomSampler(
+        weights=sample_weights,
+        num_samples=len(sample_weights),
+        replacement=True
+    )
+    
+    # Create DataLoader with the sampler and collate_fn
+    dataloader = DataLoader(
+        dataset,
+        batch_size=batch_size,
+        sampler=sampler,
+        num_workers=num_workers,
+        collate_fn=collate_fn,
+        pin_memory=True
+    )
+    
+    return dataloader

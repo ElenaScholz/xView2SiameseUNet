@@ -1,4 +1,4 @@
-
+import numpy as np
 import matplotlib.pyplot as plt
 # TODO Write the function in a way, that it plots transformed and not transformed images (to compare)
 def create_Control_plots(Dataset_Sample):
