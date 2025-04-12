@@ -33,4 +33,15 @@ xBD: A Dataset for Assessing Building Damage from Satellite Imagery
 
 
 
-# Siamese UNet
+# Structure of the repository
+/ (XVIEW2SIAMESEUNET)
+├── notebooks/
+│   ├── utils/
+│   │   ├── inference.py
+│   │   ├── metrics.py
+│   │   ├── training_preparations.py
+│   │   ├── viz.py
+│   ├── 01_Preprocessing.ipynb
+│   ├── 02_xview2SiameseUNet.ipynb
+├── pyproject.toml
+├── README.md
