@@ -4,6 +4,10 @@ import numpy as np
 from collections import Counter
 from tqdm import tqdm  # Optional, für Fortschrittsanzeige
 import json
+from torch.utils.data import WeightedRandomSampler
+from torch.utils.data import DataLoader, Dataset
+
+from utils.dataset import collate_fn
 
 def calculate_class_counts(dataset):
     pre_class_counts = Counter()
@@ -43,10 +47,13 @@ def save_class_counts(pre_counts, post_counts, filepath):
     with open(filepath, 'w') as f:
         json.dump(data, f, indent=2)  # optional schön formatiert
 
+
 def load_class_counts(filepath):
     with open(filepath, 'r') as f:
         data = json.load(f)
-    return Counter({str(k): v for k, v in data['pre'].items()}), Counter({int(k): v for k, v in data['post'].items()})
+    pre_counts = Counter({int(k): int(v) for k, v in data['pre'].items()})
+    post_counts = Counter({int(k): int(v) for k, v in data['post'].items()})
+    return pre_counts, post_counts
 
 from collections import Counter
 

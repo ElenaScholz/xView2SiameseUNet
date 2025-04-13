@@ -18,3 +18,28 @@ def image_transform():
         #v2.GaussianBlur(kernel_size=(3, 3), sigma=(0.1, 2.0)),
         v2.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
     ])
+
+
+
+    
+def collate_fn(batch):
+      # Extrahieren der einzelnen Daten aus der Batch-Liste
+    pre_imgs, post_imgs, pre_masks, post_masks = zip(*batch)
+
+    # Stapeln der Tensoren entlang der Batch-Dimension (erste Dimension)
+    pre_imgs = torch.stack(pre_imgs, dim=0)
+    post_imgs = torch.stack(post_imgs, dim=0)
+    pre_masks = torch.stack(pre_masks, dim=0)
+    post_masks = torch.stack(post_masks, dim=0)
+
+    return pre_imgs, post_imgs, pre_masks, post_masks
+
+
+   
+def collate_fn_test(batch):
+    pre_imgs, post_imgs, pre_names, post_names = zip(*batch)
+    # Stapeln der Tensoren entlang der Batch-Dimension (erste Dimension)
+    pre_imgs = torch.stack(pre_imgs, dim=0)
+    post_imgs = torch.stack(post_imgs, dim=0)
+
+    return pre_imgs, post_imgs, pre_names, post_names
