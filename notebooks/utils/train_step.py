@@ -1,8 +1,14 @@
-from model.siamese_unet import siamese_unet
-from model.unet import UNet_ResNet50
+from model.siameseNetwork import SiameseUnet
+from model.uNet import UNet_ResNet50
+import torch
+from model.loss import combined_loss_function
 
+from torchmetrics.classification import MulticlassPrecision, MulticlassRecall, MulticlassF1Score
 
-def train_step(model, dataloader, optimizer, epoch):
+# device wird auch verwendet (falls nicht global definiert)
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+def train_step(model, dataloader, optimizer, epoch, writer, focal_loss_pre, focal_loss_post):    
     model.train()
     train_loss = 0.0
     
@@ -29,8 +35,9 @@ def train_step(model, dataloader, optimizer, epoch):
         pred = model(X_pre, X_post)
         pred.float()
         # Calculate loss using combined loss function
-        loss = combined_loss_function(pred, y_pre_metric, y_post_metric)
-        
+        #loss = combined_loss_function(pred, y_pre_metric, y_post_metric)
+     
+        loss = combined_loss_function(pred, y_pre_metric, y_post_metric, focal_loss_pre, focal_loss_post)
         optimizer.zero_grad()
         loss.backward()
 

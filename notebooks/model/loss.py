@@ -1,3 +1,8 @@
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+
+
 class FocalLoss(nn.Module):
     def __init__(self, alpha=None, gamma=2, reduction='mean'):
         super(FocalLoss, self).__init__()
@@ -45,14 +50,26 @@ class FocalLoss(nn.Module):
             return focal_loss
 
 
-# Combined loss function for training
-def combined_loss_function(outputs, pre_masks, post_masks):
+# # Combined loss function for training
+# def combined_loss_function(outputs, pre_masks, post_masks):
+#     pre_outputs = outputs[:, :2]  # First 2 channels
+#     post_outputs = outputs[:, 2:]  # Remaining channels
+    
+#     # Calculate focal losses
+#     pre_loss = focal_loss_pre(pre_outputs, pre_masks)
+#     post_loss = focal_loss_post(post_outputs, post_masks)
+    
+#     # Combine losses (you can adjust weights)
+#     total_loss = pre_loss + post_loss
+#     return total_loss
+
+def combined_loss_function(outputs, pre_masks, post_masks, pre_loss_fn, post_loss_fn):
     pre_outputs = outputs[:, :2]  # First 2 channels
     post_outputs = outputs[:, 2:]  # Remaining channels
     
     # Calculate focal losses
-    pre_loss = focal_loss_pre(pre_outputs, pre_masks)
-    post_loss = focal_loss_post(post_outputs, post_masks)
+    pre_loss = pre_loss_fn(pre_outputs, pre_masks)
+    post_loss = post_loss_fn(post_outputs, post_masks)
     
     # Combine losses (you can adjust weights)
     total_loss = pre_loss + post_loss

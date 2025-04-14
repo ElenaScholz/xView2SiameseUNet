@@ -15,7 +15,7 @@ def get_data_folder(folder_name: str,
 
     if main_dataset:
         DATASET_ROOT = DATA_PATH / "xview2"
-        DATA_FOLDER = DATASET_ROOT / "test" # this has to be changed in respect to the folder (tier1, tier3, hold, test)
+        DATA_FOLDER = DATASET_ROOT / folder_name # this has to be changed in respect to the folder (tier1, tier3, hold, test)
         IMAGE_FOLDER = DATA_FOLDER / "images/"
         LABEL_FOLDER = DATA_FOLDER / "labels/"
         TARGET_FOLDER = DATA_FOLDER / "targets/"

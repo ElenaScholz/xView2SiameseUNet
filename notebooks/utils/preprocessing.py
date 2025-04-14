@@ -1,3 +1,10 @@
+import os
+import pandas as pd
+import numpy as np
+import geopandas as gpd
+from PIL import Image
+import rasterio as rio
+from shapely import wkt
 
 def extract_features(features):
     """Extract polygons, feature types, and damage classes from features."""

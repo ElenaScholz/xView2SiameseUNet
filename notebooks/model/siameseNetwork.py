@@ -1,4 +1,4 @@
-from unet import UNet_ResNet50
+from model.uNet import UNet_ResNet50
 import torch
 import torch.nn as nn
 
