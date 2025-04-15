@@ -2,6 +2,7 @@ import gc
 import json
 import torch.nn as nn
 import os
+from pathlib import Path
 from torch.utils.tensorboard import SummaryWriter
 from torch.optim.lr_scheduler import CosineAnnealingWarmRestarts
 from torch.utils.data import DataLoader
@@ -19,22 +20,25 @@ from utils.train_step import train_step
 from utils.val_step import val_step
 # from utils.training_preparations import create_weighted_dataloader
 from torch.utils.data import WeightedRandomSampler
+from utils.earlyStopping import EarlyStopping
 
 
+DATA_ROOT, TRAIN_ROOT, TRAIN_IMG, TRAIN_LABEL, TRAIN_TARGET, TRAIN_PNG_IMAGES = get_data_folder("tier1", main_dataset = False)
 
-DATA_ROOT, TRAIN_ROOT, TRAIN_IMG, TRAIN_LABEL, TRAIN_TARGET, TRAIN_PNG_IMAGES = get_data_folder("tier1", main_dataset = True)
+DATA_ROOT, VAL_ROOT, VAL_IMG, VAL_LABEL, VAL_TARGET, VAL_PNG_IMAGES = get_data_folder("hold", main_dataset = False)
 
-DATA_ROOT, VAL_ROOT, VAL_IMG, VAL_LABEL, VAL_TARGET, VAL_PNG_IMAGES = get_data_folder("hold", main_dataset = True)
+USER = "di97ren"
+USER_PATH = Path("/dss/dsstbyfs02/pn49ci/pn49ci-dss-0022/users/{USER}")
 
 # Pathes to store experiment informations in:
-EXPERIMENT_GROUP = "xView2_Experiments"
-EXPERIMENT_ID = "002"
-
-EXPERIMENT_DIR = DATA_ROOT / EXPERIMENT_GROUP /"tensorboard_logs"
+EXPERIMENT_GROUP = "xView2_Subset"
+EXPERIMENT_ID = "001"
+EXPERIMENT_DIR = USER_PATH / EXPERIMENT_GROUP /"tensorboard_logs"
 EXPERIMENT_DIR.mkdir(parents=True, exist_ok=True)
 print(EXPERIMENT_DIR)
+
 # Auch Checkpoints-Verzeichnis erstellen
-CHECKPOINTS_DIR = DATA_ROOT / EXPERIMENT_GROUP / "checkpoints"
+CHECKPOINTS_DIR = USER_PATH / EXPERIMENT_GROUP / "checkpoints"
 CHECKPOINTS_DIR.mkdir(parents=True, exist_ok=True)
 
 # Create the Datasets for Training and Validation
@@ -156,11 +160,26 @@ val_dataloader = DataLoader(
 )
 
 
+# Basic setup for early stopping criteria
+patience = 5  # epochs to wait after no improvement
+delta = 0.01  # minimum change in the monitored metric
+best_val_loss = float("inf")  # best validation loss to compare against
+no_improvement_count = 0  # count of epochs with no improvement
 
-# Training loop
-best_val_loss = float('inf')
-best_checkpoint_path = None
+# Initialize early stopping
+early_stopping = EarlyStopping(
+    patience=5, 
+    delta=0.01, 
+    verbose=True,
+    checkpoint_dir=CHECKPOINTS_DIR,
+    experiment_group=EXPERIMENT_GROUP,
+    experiment_id=EXPERIMENT_ID
+)
+# # Training loop
+# best_val_loss = float('inf')
+# best_checkpoint_path = None
 print("starting Training Loop")
+
 for epoch in range(EPOCHS):
     print(f"Epoch {epoch+1}/{EPOCHS}")
     
@@ -172,37 +191,55 @@ for epoch in range(EPOCHS):
     # Validation step
     avg_val_loss = val_step(model, train_dataloader, optimizer, epoch, writer, focal_loss_pre, focal_loss_post)
     print(f"Val Loss: {avg_val_loss:.4f}")
-    
+
     # Update learning rate
     scheduler.step()
+    # Check for early stopping and save best model
+    should_stop = early_stopping.check_early_stop(
+        avg_val_loss, 
+        epoch, 
+        model, 
+        optimizer, 
+        scheduler, 
+        writer
+    )
     
-    # Save checkpoint if validation loss improves
-    if avg_val_loss < best_val_loss:
-        best_val_loss = avg_val_loss
-        best_checkpoint_path = CHECKPOINTS_DIR / f'{EXPERIMENT_GROUP}_{EXPERIMENT_ID}_epoch_{epoch+1}.pth'
-        
-        print(f"Attempting to save checkpoint to {best_checkpoint_path}")
-        print(f"Directory exists: {CHECKPOINTS_DIR.exists()}")
-        print(f"Directory is writable: {os.access(CHECKPOINTS_DIR, os.W_OK)}")
-        
-        try:
-            torch.save({
-                'epoch': epoch+1,
-                'model_state_dict': model.state_dict(),
-                'optimizer_state_dict': optimizer.state_dict(),
-                'scheduler_state_dict': scheduler.state_dict(),
-                'loss': best_val_loss,
-            }, best_checkpoint_path)
-            print(f'Successfully saved checkpoint at {best_checkpoint_path}')
-            best_checkpoint_path_str = f"val_loss:{best_val_loss:.4f}@{best_checkpoint_path}"
-            writer.add_text("Best Checkpoint Path", best_checkpoint_path_str, epoch)
-        except Exception as e:
-            print(f"Error saving checkpoint: {e}")
-    
-    # Log current learning rate
-    writer.add_scalar("LR", scheduler.get_last_lr()[0], epoch)
+    if should_stop:
+        print(f"Early stopping at epoch {epoch+1}")
+        break
 
-writer.close()
+#     # Check for early stopping
+#     should_stop = early_stopping.check_early_stop(avg_val_loss, model)
+#     if should_stop:
+#         print(f"Early stopping at epoch {epoch+1}")
+#         break#
+#     # Save checkpoint if validation loss improves
+#     if avg_val_loss < best_val_loss:
+#         best_val_loss = avg_val_loss
+#         best_checkpoint_path = CHECKPOINTS_DIR / f'{EXPERIMENT_GROUP}_{EXPERIMENT_ID}_epoch_{epoch+1}.pth'
+    
+#         print(f"Attempting to save checkpoint to {best_checkpoint_path}")
+#         print(f"Directory exists: {CHECKPOINTS_DIR.exists()}")
+#         print(f"Directory is writable: {os.access(CHECKPOINTS_DIR, os.W_OK)}")
+        
+#         try:
+#             torch.save({
+#                 'epoch': epoch+1,
+#                 'model_state_dict': model.state_dict(),
+#                 'optimizer_state_dict': optimizer.state_dict(),
+#                 'scheduler_state_dict': scheduler.state_dict(),
+#                 'loss': best_val_loss,
+#             }, best_checkpoint_path)
+#             print(f'Successfully saved checkpoint at {best_checkpoint_path}')
+#             best_checkpoint_path_str = f"val_loss:{best_val_loss:.4f}@{best_checkpoint_path}"
+#             writer.add_text("Best Checkpoint Path", best_checkpoint_path_str, epoch)
+#         except Exception as e:
+#             print(f"Error saving checkpoint: {e}")
+    
+#     # Log current learning rate
+#     writer.add_scalar("LR", scheduler.get_last_lr()[0], epoch)
+
+# writer.close()
 print("Done!")
 
 torch.save(model.state_dict(), 'precalculations/siamese_unet_weights.pth')
