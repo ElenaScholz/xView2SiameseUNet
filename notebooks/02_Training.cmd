@@ -12,7 +12,7 @@
 #SBATCH --mail-user=elena.scholz@stud-mail.uni-wuerzburg.de
 #SBATCH --export=NONE
 #SBATCH --time=40:00:00
-#SBATCH --account=di97ren-c
+#SBATCH --account=di97ren
 
 # Lade Module
 module load slurm_setup
