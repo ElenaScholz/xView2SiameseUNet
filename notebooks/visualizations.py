@@ -26,7 +26,7 @@ def plot_images(rgb_images, mask_images, figsize=(10, 6)):
         '#91bfdb',  # 2: Minor damage (light blue)
         '#ffffbf',  # 3: Major damage (light yellow)
         '#fc8d59',  # 4: Destroyed (orange)
-        '#d73027'   # 5: Unclassified (red)
+        '#004D40'   # 5: Unclassified (green)
     ]
     
     # Create a custom colormap
