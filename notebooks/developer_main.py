@@ -32,7 +32,7 @@ USER_PATH = Path(f"/dss/dsstbyfs02/pn49ci/pn49ci-dss-0022/users/{USER}")
 
 # Pathes to store experiment informations in:
 EXPERIMENT_GROUP = "xView2_Subset"
-EXPERIMENT_ID = "001"
+EXPERIMENT_ID = "002"
 EXPERIMENT_DIR = USER_PATH / EXPERIMENT_GROUP /"tensorboard_logs"
 EXPERIMENT_DIR.mkdir(parents=True, exist_ok=True)
 print(EXPERIMENT_DIR)
