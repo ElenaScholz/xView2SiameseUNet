@@ -7,7 +7,7 @@ from torch.utils.tensorboard import SummaryWriter
 from torch.optim.lr_scheduler import CosineAnnealingWarmRestarts
 from torch.utils.data import DataLoader
 import torch
-
+import yaml
 
 
 from utils.helperfunctions import get_data_folder
@@ -22,18 +22,28 @@ from utils.val_step import val_step
 from torch.utils.data import WeightedRandomSampler
 from utils.earlyStopping import EarlyStopping
 
+base_dir = Path(__file__).resolve().parent.parent
+config_path = base_dir / "notebooks" / "00_config.yaml"
+print(base_dir)
 
-DATA_ROOT, TRAIN_ROOT, TRAIN_IMG, TRAIN_LABEL, TRAIN_TARGET, TRAIN_PNG_IMAGES = get_data_folder("tier1", main_dataset = False)
+with open(config_path, "r") as file:
+    config = yaml.safe_load(file)
 
-DATA_ROOT, VAL_ROOT, VAL_IMG, VAL_LABEL, VAL_TARGET, VAL_PNG_IMAGES = get_data_folder("hold", main_dataset = False)
 
-USER = "di97ren"
-#USER_PATH = Path(f"/dss/dsstbyfs02/pn49ci/pn49ci-dss-0022/users/{USER}")
+DATA_ROOT, TRAIN_ROOT, TRAIN_IMG, TRAIN_LABEL, TRAIN_TARGET, TRAIN_PNG_IMAGES = get_data_folder(config["data"]["training_name"], main_dataset = config["data"]["use_main_dataset"])
+
+DATA_ROOT, VAL_ROOT, VAL_IMG, VAL_LABEL, VAL_TARGET, VAL_PNG_IMAGES = get_data_folder(config["data"]["validation_name"], main_dataset = config["data"]["use_main_dataset"])
+
+
+USER = config["data"]["user"]
+
+# USER = "di97ren"
+# #USER_PATH = Path(f"/dss/dsstbyfs02/pn49ci/pn49ci-dss-0022/users/{USER}")
 USER_HOME_PATH = Path(f"/dss/dsshome1/08/{USER}")
 
 # Pathes to store experiment informations in:
-EXPERIMENT_GROUP = "xView2_Subset"
-EXPERIMENT_ID = "003"
+EXPERIMENT_GROUP = config["data"]["experiment_group"]
+EXPERIMENT_ID = config["data"]["experiment_id"]
 EXPERIMENT_DIR = USER_HOME_PATH / EXPERIMENT_GROUP / "tensorboard_logs" / EXPERIMENT_ID
 EXPERIMENT_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -53,8 +63,8 @@ print(f"Logfiles werden gespeichert in: {LOGFILES_DIR}")
 train_dataset = xView2Dataset(png_path = TRAIN_PNG_IMAGES, target_path = TRAIN_TARGET, transform = transform(), image_transform = image_transform())
 val_dataset = xView2Dataset(png_path = VAL_PNG_IMAGES, target_path = VAL_TARGET, transform = transform(), image_transform = image_transform())
 
-# Basis-Ordner (geht hoch aus notebooks/)
-base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) if "__file__" in globals() else os.path.abspath("../")
+# # Basis-Ordner (geht hoch aus notebooks/)
+# base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) if "__file__" in globals() else os.path.abspath("../")
 
 # Korrekte Pfade
 class_counts_path = os.path.join(base_dir, "precalculations", "class_counts.json")
@@ -108,17 +118,23 @@ criterion_post = nn.CrossEntropyLoss(weight=class_weights_post)
 
 # Constants and Setup
 NUM_CLASSES = 6
-EPOCHS = 20
+EPOCHS = config["training"]["epochs"]
 
 
 # Create focal loss instances with class weights
 focal_loss_pre = FocalLoss(alpha=class_weights_pre, gamma=2)
 focal_loss_post = FocalLoss(alpha=class_weights_post, gamma=2)
+
+
 # In your main script, before calling train_step
 print(f"Type of focal_loss_pre: {type(focal_loss_pre)}")
 print(f"Type of focal_loss_post: {type(focal_loss_post)}")
+
 # At the beginning of your script
 torch.set_default_tensor_type(torch.FloatTensor)
+
+
+
 # Set up model
 model = SiameseUnet(num_pre_classes=2, num_post_classes=6)
 if torch.cuda.device_count() > 1:
@@ -129,13 +145,13 @@ model = model.to(device)
 # Set up tensorboard writer
 writer = SummaryWriter(EXPERIMENT_DIR / EXPERIMENT_ID)
 
-# Set up optimizer and scheduler
+# # Set up optimizer and scheduler
 optimizer = torch.optim.AdamW(model.parameters(), lr=1e-4)  # Etwas niedrigere Startlernrate
 scheduler = CosineAnnealingWarmRestarts(
     optimizer,
-    T_0=10,          # Längerer erster Zyklus
-    T_mult=2,
-    eta_min=1e-6
+    T_0= config["training"]["scheduler"]["T_0"],          # Längerer erster Zyklus
+    T_mult=config["training"]["scheduler"]["T_mult"],
+    eta_min=config["training"]["scheduler"]["eta_min"]
 )
 
 
@@ -148,7 +164,7 @@ else:
 print("Create Training Dataloader")
 train_dataloader = DataLoader(
     train_dataset, 
-    batch_size = 8,
+    batch_size = config["training"]["batch_size"],
     shuffle = True,
     num_workers = num_workers,
     collate_fn = collate_fn,
@@ -159,7 +175,7 @@ print("Done")
 print("Create Validation Dataloader")
 val_dataloader = DataLoader(
     val_dataset,
-    batch_size=8,
+    batch_size= config["training"]["batch_size"],
     shuffle=False,
     num_workers=num_workers,
     collate_fn=collate_fn,
@@ -167,16 +183,14 @@ val_dataloader = DataLoader(
 )
 
 
-# Basic setup for early stopping criteria
-patience = 5  # epochs to wait after no improvement
-delta = 0.01  # minimum change in the monitored metric
+# # Basic setup for early stopping criteria
 best_val_loss = float("inf")  # best validation loss to compare against
 no_improvement_count = 0  # count of epochs with no improvement
 
-# Initialize early stopping
+# # Initialize early stopping
 early_stopping = EarlyStopping(
-    patience=5, 
-    delta=0.01, 
+    patience=config["training"]["patience"] , # epochs to wait after no improvement
+    delta=config["training"]["delta"], # minimum change in the monitored metric
     verbose=True,
     checkpoint_dir=CHECKPOINTS_DIR,
     experiment_group=EXPERIMENT_GROUP,
@@ -215,40 +229,9 @@ for epoch in range(EPOCHS):
         print(f"Early stopping at epoch {epoch+1}")
         break
 
-#     # Check for early stopping
-#     should_stop = early_stopping.check_early_stop(avg_val_loss, model)
-#     if should_stop:
-#         print(f"Early stopping at epoch {epoch+1}")
-#         break#
-#     # Save checkpoint if validation loss improves
-#     if avg_val_loss < best_val_loss:
-#         best_val_loss = avg_val_loss
-#         best_checkpoint_path = CHECKPOINTS_DIR / f'{EXPERIMENT_GROUP}_{EXPERIMENT_ID}_epoch_{epoch+1}.pth'
-    
-#         print(f"Attempting to save checkpoint to {best_checkpoint_path}")
-#         print(f"Directory exists: {CHECKPOINTS_DIR.exists()}")
-#         print(f"Directory is writable: {os.access(CHECKPOINTS_DIR, os.W_OK)}")
-        
-#         try:
-#             torch.save({
-#                 'epoch': epoch+1,
-#                 'model_state_dict': model.state_dict(),
-#                 'optimizer_state_dict': optimizer.state_dict(),
-#                 'scheduler_state_dict': scheduler.state_dict(),
-#                 'loss': best_val_loss,
-#             }, best_checkpoint_path)
-#             print(f'Successfully saved checkpoint at {best_checkpoint_path}')
-#             best_checkpoint_path_str = f"val_loss:{best_val_loss:.4f}@{best_checkpoint_path}"
-#             writer.add_text("Best Checkpoint Path", best_checkpoint_path_str, epoch)
-#         except Exception as e:
-#             print(f"Error saving checkpoint: {e}")
-    
-#     # Log current learning rate
-#     writer.add_scalar("LR", scheduler.get_last_lr()[0], epoch)
 
-# writer.close()
 print("Done!")
-# Bestes Modell minimal speichern
+# save best model
 torch.save(model.state_dict(), CHECKPOINTS_DIR / f"{EXPERIMENT_ID}_best_siamese_unet_state.pth")
 
 

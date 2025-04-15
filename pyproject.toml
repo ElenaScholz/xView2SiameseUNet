@@ -15,6 +15,7 @@ dependencies = [
     "pytorch-lightning>=2.5.0.post0",
     "rasterio>=1.4.3",
     "resnest>=0.0.5",
+    "scikit-learn>=1.6.1",
     "tensorboard>=2.18.0",
     "tifffile>=2025.2.18",
     "torch>=2.5.1",

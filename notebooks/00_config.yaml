@@ -1,0 +1,55 @@
+# config/config.yaml
+
+# Dataset Pfade
+data:
+  user: "di97ren"
+  training_name: "tier1"
+  validation_name: "hold"
+  test_name: "test"
+  use_main_dataset: False
+  experiment_group: "xView2_Subset"
+  experiment_id: "003"
+
+# Training Parameter
+training:
+  epochs: 20
+  batch_size: 8
+  learning_rate: 0.0001
+  scheduler:
+    T_0: 10
+    T_mult: 2
+    eta_min: 0.000001
+  patience: 5
+  delta: 0.01
+
+# Loss weights
+loss_weights:
+  pre:
+    0: 1.0
+    1: 10.0
+  post:
+    0: 1.0
+    1: 10.0
+    2: 30.0
+    3: 20.0
+    4: 50.0
+    5: 100.0
+
+# Dataloader
+dataloader:
+  num_workers_multiplier: 4
+  pin_memory: true
+
+
+
+# Logging und Speicherorte
+foldernames:
+  tensorboard_logs: "tensorboard_logs"
+  checkpoints: "checkpoints"
+  logfiles: "logfiles"
+  class_counts_file: "precalculations/class_counts.json"
+  sample_weights_file: "precalculations/sample_weights.pt"
+
+# Focal Loss Parameter
+focal_loss:
+  gamma: 2
