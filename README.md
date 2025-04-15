@@ -6,9 +6,11 @@ The xView2 Dataset contains data from Maxar/Digital Globe. They released those D
 
 The Dataset contains more then 850.000 annotated polygons and damage scores on a building scale. It is divided into 6 different disaster types and covers disasters from around the globe
 
-The datase includes contextual Information as water, fire, smoke or lava. It includes different building types from all around the world as well as negativr imagery that do not depict any damage.
+The datase includes contextual Information as water, fire, smoke or lava. It includes different building types from all around the world as well as negative imagery that do not depict any damage.
 
---> Insert Image of Disaster Distribution
+![Beispielbild](graphics/exampleImages.png)
+
+
 
 xBD: A Dataset for Assessing Building Damage from Satellite Imagery
 
@@ -23,11 +25,12 @@ xBD: A Dataset for Assessing Building Damage from Satellite Imagery
 
 ### Dataset Split
 
-|Split|Images|Polygons|
-|Tier1||
-|Tier3||
-|Hold||
-|Test||
+|Split|Images and Masks|
+| --- | --- | 
+|Tier1|5596|
+|Tier3|12738|
+|Hold|1866|
+|Test|1866|
 
 ### Example Images
 
@@ -46,4 +49,30 @@ xBD: A Dataset for Assessing Building Damage from Satellite Imagery
 ├── pyproject.toml
 ├── README.md
 
-# 
+# Informaions for developers
+## Model Architecture
+As a model for building damage assesment a siamese neural network was chosen. It consists of two identical UNets with a ResNET50 encoder.
+### Siamese Neural Network
+A siamese neural network contains at least two identical sub-networks and is used for tasks where two similar images are given and the aim is to detect similiarities or differences. 
+It takes a paired input and gives one output. In this case, for building damage detection the aim was to get a segmentation mask containing the building location and damage grade. 
+The siamese structure allwos to detect changes through direct comparison between pre- and post-disaster building states.
+** U-Net **
+The U-Net architecture has a encoder-decoder structure and skip connections. This helps to preserve spatial information, which are critical for building segmentation and damage patterns.
+
+
+** ResNet 50 ** 
+The ResNet50 was chosen as an encoder. It has a high capability to extract features. A further advantage was the pre-trained backboned. The deep architecture of ResNet50 captures hirachical features that represent different aspect of buildin damage. 
+
+## Dealing with class imbalances
+The xView2 dataset has high class imbalances. With more then 90% of all pixels depicting background and not buildings, 
+the class imbalances need to be taken into account.
+### Focal Loss
+https://arxiv.org/pdf/1708.02002
+Focal Loss as a Loss Function takes class imbalances into account and downweights the background and therefore focuses on the damage classes.
+This was done by weighting each class inversely proportional to its frequency in the dataset, using the alpha parameter to assign higher weights 
+to rare classes (buildings and damage categories) and 
+lower weights to common classes (background). Additionally, the gamma parameter (set to 2) 
+further reduces the contribution of easily classified examples, allowing the model to focus on challenging cases like building boundaries 
+and subtle damage patterns.
+ 
+*** Note: Add a histogram of classes ?? ***
