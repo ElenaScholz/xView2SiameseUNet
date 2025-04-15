@@ -36,20 +36,33 @@ xBD: A Dataset for Assessing Building Damage from Satellite Imagery
 
 ![Beispielbild](graphics/exampleImages.png)
 
-# Structure of the repository
-/ (XVIEW2SIAMESEUNET)
-├── notebooks/
-│   ├── utils/
-│   │   ├── inference.py
-│   │   ├── metrics.py
-│   │   ├── training_preparations.py
-│   │   ├── viz.py
-│   ├── 01_Preprocessing.ipynb
-│   ├── 02_xview2SiameseUNet.ipynb
-├── pyproject.toml
-├── README.md
+# Structure of the repository and general Information
+📁 / (XVIEW2SIAMESEUNET) 
+├── 📁 notebooks/ │ 
+├── 📁 utils/ │
+│ ├── 📄 inference.py │
+│ ├── 📄 metrics.py │ │
+├── 📄 training_preparations.py │
+│ ├── 📄 viz.py │
+├── 📄 01_Preprocessing.ipynb │
+├── 📄 02_xview2SiameseUNet.ipynb 
+├── 📄 pyproject.toml 
+├── 📄 README.md
 
-# Informaions for developers
+## Getting Started
+
+To use the code of this repository, clone (or fork) it into the directory you want to work in.
+
+The environment is managed with [`uv`](https://github.com/astral-sh/uv). All required packages are listed in the `pyproject.toml` file.
+
+To set up the environment, simply run:
+
+```bash
+module load uv
+uv sync
+```
+
+# Informations for developers
 ## Model Architecture
 As a model for building damage assesment a siamese neural network was chosen. It consists of two identical UNets with a ResNET50 encoder.
 ### Siamese Neural Network
@@ -76,3 +89,5 @@ further reduces the contribution of easily classified examples, allowing the mod
 and subtle damage patterns.
  
 *** Note: Add a histogram of classes ?? ***
+
+## 
