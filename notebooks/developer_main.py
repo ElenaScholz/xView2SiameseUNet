@@ -28,6 +28,7 @@ DATA_ROOT, TRAIN_ROOT, TRAIN_IMG, TRAIN_LABEL, TRAIN_TARGET, TRAIN_PNG_IMAGES = 
 DATA_ROOT, VAL_ROOT, VAL_IMG, VAL_LABEL, VAL_TARGET, VAL_PNG_IMAGES = get_data_folder("hold", main_dataset = False)
 
 USER = "di97ren"
+#USER_PATH = Path(f"/dss/dsstbyfs02/pn49ci/pn49ci-dss-0022/users/{USER}")
 USER_HOME_PATH = Path(f"/dss/dsshome1/08/{USER}")
 
 # Pathes to store experiment informations in:
@@ -36,16 +37,14 @@ EXPERIMENT_ID = "002"
 EXPERIMENT_DIR = USER_HOME_PATH / EXPERIMENT_GROUP / "tensorboard_logs" / EXPERIMENT_ID
 EXPERIMENT_DIR.mkdir(parents=True, exist_ok=True)
 
-# EXPERIMENT_DIR = USER_PATH / EXPERIMENT_GROUP /"tensorboard_logs"
-# EXPERIMENT_DIR.mkdir(parents=True, exist_ok=True)
 print(EXPERIMENT_DIR)
 
 # Auch Checkpoints-Verzeichnis erstellen
-CHECKPOINTS_DIR = USER_PATH / EXPERIMENT_GROUP / "checkpoints"
+CHECKPOINTS_DIR = USER_HOME_PATH / EXPERIMENT_GROUP / "checkpoints"
 CHECKPOINTS_DIR.mkdir(parents=True, exist_ok=True)
 
 # Logfiles-Verzeichnis erstellen
-LOGFILES_DIR = USER_PATH / EXPERIMENT_GROUP / "logfiles" / EXPERIMENT_ID
+LOGFILES_DIR = USER_HOME_PATH / EXPERIMENT_GROUP / "logfiles" / EXPERIMENT_ID
 LOGFILES_DIR.mkdir(parents=True, exist_ok=True)
 print(f"Logfiles werden gespeichert in: {LOGFILES_DIR}")
 
