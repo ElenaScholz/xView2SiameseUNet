@@ -28,13 +28,16 @@ DATA_ROOT, TRAIN_ROOT, TRAIN_IMG, TRAIN_LABEL, TRAIN_TARGET, TRAIN_PNG_IMAGES = 
 DATA_ROOT, VAL_ROOT, VAL_IMG, VAL_LABEL, VAL_TARGET, VAL_PNG_IMAGES = get_data_folder("hold", main_dataset = False)
 
 USER = "di97ren"
-USER_PATH = Path(f"/dss/dsstbyfs02/pn49ci/pn49ci-dss-0022/users/{USER}")
+USER_HOME_PATH = Path(f"/dss/dsshome1/08/{USER}")
 
 # Pathes to store experiment informations in:
 EXPERIMENT_GROUP = "xView2_Subset"
 EXPERIMENT_ID = "002"
-EXPERIMENT_DIR = USER_PATH / EXPERIMENT_GROUP /"tensorboard_logs"
+EXPERIMENT_DIR = USER_HOME_PATH / EXPERIMENT_GROUP / "tensorboard_logs" / EXPERIMENT_ID
 EXPERIMENT_DIR.mkdir(parents=True, exist_ok=True)
+
+# EXPERIMENT_DIR = USER_PATH / EXPERIMENT_GROUP /"tensorboard_logs"
+# EXPERIMENT_DIR.mkdir(parents=True, exist_ok=True)
 print(EXPERIMENT_DIR)
 
 # Auch Checkpoints-Verzeichnis erstellen
@@ -106,7 +109,7 @@ criterion_post = nn.CrossEntropyLoss(weight=class_weights_post)
 
 # Constants and Setup
 NUM_CLASSES = 6
-EPOCHS = 50
+EPOCHS = 20
 
 
 # Create focal loss instances with class weights
