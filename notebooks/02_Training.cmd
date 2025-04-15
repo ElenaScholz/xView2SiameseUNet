@@ -22,7 +22,7 @@ module load cuda
 
 # Variablen
 VENV_PATH="/dss/dsshome1/08/di97ren/04-geo-oma24/xView2SiameseUNet/.venv"
-SCRIPT_PATH="/dss/dsshome1/08/di97ren/04-geo-oma24/xView2SiameseUNet/developer_main.py"
+SCRIPT_PATH="/dss/dsshome1/08/di97ren/04-geo-oma24/xView2SiameseUNet/notebooks/developer_main.py"
 
 # Debug-Ausgabe
 echo "Starte Training mit uv..."
