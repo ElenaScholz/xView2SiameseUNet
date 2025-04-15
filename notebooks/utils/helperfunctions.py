@@ -8,7 +8,7 @@ def iterate_through_dir(directory_path):
 from pathlib import Path
 import torch
 def get_data_folder(folder_name: str,
-    main_dataset: bool):  # possible names: ["test", "tier1", "tier3", "hold"] 
+    main_dataset: bool):  # possible names: ["test", "tier1", "tier3", "hold", "train", "val"] 
     ROOT = Path("/dss/dsstbyfs02/pn49ci/pn49ci-dss-0022")
 
     DATA_PATH = ROOT / "data"
