@@ -1,3 +1,8 @@
+import torch
+from pathlib import Path
+from torch.utils.tensorboard import SummaryWriter  # Nur wenn du writer verwendest
+
+
 class EarlyStopping:
     def __init__(self, patience=5, delta=0.01, verbose=False, checkpoint_dir=None, 
                  experiment_group=None, experiment_id=None):
