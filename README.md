@@ -34,7 +34,7 @@ xBD: A Dataset for Assessing Building Damage from Satellite Imagery
 
 ### Example Images
 
-
+[!example Image of disaster classes ](graphics/exampleImages.png)
 
 # Structure of the repository
 / (XVIEW2SIAMESEUNET)
