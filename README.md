@@ -8,7 +8,7 @@ The Dataset contains more then 850.000 annotated polygons and damage scores on a
 
 The datase includes contextual Information as water, fire, smoke or lava. It includes different building types from all around the world as well as negative imagery that do not depict any damage.
 
-![Beispielbild](graphics/exampleImages.png)
+
 
 
 
@@ -34,7 +34,7 @@ xBD: A Dataset for Assessing Building Damage from Satellite Imagery
 
 ### Example Images
 
-[!example Image of disaster classes ](graphics/exampleImages.png)
+![Beispielbild](graphics/exampleImages.png)
 
 # Structure of the repository
 / (XVIEW2SIAMESEUNET)
