@@ -21,8 +21,7 @@ module load uv
 module load cuda
 
 # Variablen
-VENV_PATH="/dss/dsshome1/08/di97ren/04-geo-oma24/xView2SiameseUNet/.venv/bin/python3.13"
-
+VENV_PATH="/dss/dsshome1/08/di97ren/04-geo-oma24/xView2SiameseUNet/.venv"
 SCRIPT_PATH="/dss/dsshome1/08/di97ren/04-geo-oma24/xView2SiameseUNet/developer_main.py"
 
 # Debug-Ausgabe
