@@ -2,7 +2,7 @@
 #SBATCH -J xView2_model_Training
 #SBATCH -o /dss/dsstbyfs02/pn49ci/pn49ci-dss-0022/users/di97ren/xView2_Subset/logfiles/001/stdout.logfile
 #SBATCH -e /dss/dsstbyfs02/pn49ci/pn49ci-dss-0022/users/di97ren/xView2_Subset/logfiles/001/stderr.logfile
-#SBATCH -D /dss/dsshome1/08/di97ren/04-geo-oma24/xView2SiameseUNet
+#SBATCH -D /dss/dsstbyfs02/pn49ci/pn49ci-dss-0022/users/di97ren
 #SBATCH --clusters=hpda2
 #SBATCH --partition=hpda2_compute_gpu
 #SBATCH --gres=gpu:1
@@ -12,7 +12,7 @@
 #SBATCH --mail-user=elena.scholz@stud-mail.uni-wuerzburg.de
 #SBATCH --export=NONE
 #SBATCH --time=40:00:00
-#SBATCH --account=di97ren
+#SBATCH --account=di97ren -c
 
 # Lade Module
 module load slurm_setup
