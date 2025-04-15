@@ -33,7 +33,7 @@ USER_HOME_PATH = Path(f"/dss/dsshome1/08/{USER}")
 
 # Pathes to store experiment informations in:
 EXPERIMENT_GROUP = "xView2_Subset"
-EXPERIMENT_ID = "002"
+EXPERIMENT_ID = "003"
 EXPERIMENT_DIR = USER_HOME_PATH / EXPERIMENT_GROUP / "tensorboard_logs" / EXPERIMENT_ID
 EXPERIMENT_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -248,5 +248,7 @@ for epoch in range(EPOCHS):
 
 # writer.close()
 print("Done!")
+# Bestes Modell minimal speichern
+torch.save(model.state_dict(), CHECKPOINTS_DIR / f"{EXPERIMENT_ID}_best_siamese_unet_state.pth")
 
-torch.save(model.state_dict(), 'precalculations/siamese_unet_weights.pth')
+
