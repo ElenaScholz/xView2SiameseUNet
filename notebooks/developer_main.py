@@ -28,7 +28,7 @@ DATA_ROOT, VAL_ROOT, VAL_IMG, VAL_LABEL, VAL_TARGET, VAL_PNG_IMAGES = get_data_f
 
 # Pathes to store experiment informations in:
 EXPERIMENT_GROUP = "xView2_Experiments"
-EXPERIMENT_ID = "001"
+EXPERIMENT_ID = "002"
 
 EXPERIMENT_DIR = DATA_ROOT / EXPERIMENT_GROUP /"tensorboard_logs"
 EXPERIMENT_DIR.mkdir(parents=True, exist_ok=True)
