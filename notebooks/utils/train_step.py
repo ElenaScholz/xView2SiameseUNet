@@ -92,6 +92,7 @@
 #     return avg_train_loss
 
 from torchmetrics.classification import MulticlassPrecision, MulticlassRecall, MulticlassF1Score, Accuracy
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 def train_step(model, dataloader, optimizer, epoch, writer, focal_loss_pre, focal_loss_post):    
     model.train()
