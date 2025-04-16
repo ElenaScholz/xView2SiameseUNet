@@ -125,9 +125,33 @@ and subtle damage patterns.
 *** Note: Add a histogram of classes ?? ***
 
 ## Training
-Start the training process by changing the parameters of the configuration file (notebooks/00_config.ymal). You need to change the user name to you needs as well es all training parameters. 
+Start the training process by changing the parameters of the configuration file (notebooks/00_config.ymal). Parameters are explained in the configuration file section. 
 
+After this you have two options to run the training: 
+02_Training.cmd as a slurm job or the 02_developer_main.py  
 
-- Describe which files to use
-- which parameters to set
-- 
+All written outputs can be found here: 
+
+├── experiments/
+│   └── xView2_all_data/
+│       └── 002/
+│           ├── tensorboard_logs/
+│           ├── checkpoints/
+│           ├── logfiles/
+
+The precalculated class counts and weights are stored under:
+
+TODO - Sie werden nicht ins repository gepusht - wo speichern??
+
+├── experiments/  
+│   ├── precalculations/  
+│   │   ├── class_counts.json  
+│   │   └── sample_weights.pth
+
+The model is stored within the checkpoints directory under the filename: 002_best_siamese_unet_state.pth
+
+To run inference for this model use the file 03_user_main.ipynb. More information about this file can be found in the following section Informations for users.
+
+# Informations for users
+
+If you want to assess building damage 
