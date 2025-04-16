@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
-
-def find_best_checkpoint(checkpoint_dir, experiment_id=experiment_id):
+import torch
+def find_best_checkpoint(checkpoint_dir, experiment_id):
     """Find checkpoint with lowest validation loss in filename."""
     checkpoint_dir = Path(checkpoint_dir)
     checkpoints = list(checkpoint_dir.glob(f"*{experiment_id}*.pth"))
