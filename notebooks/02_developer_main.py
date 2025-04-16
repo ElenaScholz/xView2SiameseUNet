@@ -50,7 +50,7 @@ EXPERIMENT_DIR.mkdir(parents=True, exist_ok=True)
 print(EXPERIMENT_DIR)
 
 # Auch Checkpoints-Verzeichnis erstellen
-CHECKPOINTS_DIR = USER_HOME_PATH / EXPERIMENT_GROUP / "checkpoints"
+CHECKPOINTS_DIR = USER_HOME_PATH / EXPERIMENT_GROUP / "checkpoints" / EXPERIMENT_ID
 CHECKPOINTS_DIR.mkdir(parents=True, exist_ok=True)
 
 # Logfiles-Verzeichnis erstellen
