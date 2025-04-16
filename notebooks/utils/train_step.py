@@ -1,12 +1,12 @@
-# from model.siameseNetwork import SiameseUnet
-# from model.uNet import UNet_ResNet50
-# import torch
-# from model.loss import combined_loss_function
+from model.siameseNetwork import SiameseUnet
+from model.uNet import UNet_ResNet50
+import torch
+from model.loss import combined_loss_function
 
-# from torchmetrics.classification import MulticlassPrecision, MulticlassRecall, MulticlassF1Score
+from torchmetrics.classification import MulticlassPrecision, MulticlassRecall, MulticlassF1Score
 
 # # device wird auch verwendet (falls nicht global definiert)
-# device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # def train_step(model, dataloader, optimizer, epoch, writer, focal_loss_pre, focal_loss_post):    
 #     model.train()
@@ -92,7 +92,6 @@
 #     return avg_train_loss
 
 from torchmetrics.classification import MulticlassPrecision, MulticlassRecall, MulticlassF1Score, Accuracy
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 def train_step(model, dataloader, optimizer, epoch, writer, focal_loss_pre, focal_loss_post):    
     model.train()
