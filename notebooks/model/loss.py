@@ -72,5 +72,5 @@ def combined_loss_function(outputs, pre_masks, post_masks, pre_loss_fn, post_los
     post_loss = post_loss_fn(post_outputs, post_masks)
     
     # Combine losses (you can adjust weights)
-    total_loss = pre_loss + post_loss
+    total_loss = 0.4* pre_loss + 0.6*post_loss
     return total_loss

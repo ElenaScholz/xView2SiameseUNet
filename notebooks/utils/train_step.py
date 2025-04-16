@@ -47,7 +47,7 @@ def train_step(model, dataloader, optimizer, epoch, writer, focal_loss_pre, foca
                 writer.add_histogram(f"gradients/{name}", param.grad, epoch)
                 writer.add_histogram(f"weights/{name}", param, epoch)
 
-        torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)  # Gradient clipping
+        torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=2.5)  # Gradient clipping increased from 1
         optimizer.step()
         # Track loss
         train_loss += loss.item()

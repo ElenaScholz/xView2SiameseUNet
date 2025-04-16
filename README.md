@@ -9,9 +9,6 @@ The Dataset contains more then 850.000 annotated polygons and damage scores on a
 The datase includes contextual Information as water, fire, smoke or lava. It includes different building types from all around the world as well as negative imagery that do not depict any damage.
 
 
-
-
-
 xBD: A Dataset for Assessing Building Damage from Satellite Imagery
 
 ### Disaster Label:
@@ -24,7 +21,7 @@ xBD: A Dataset for Assessing Building Damage from Satellite Imagery
 | 3 | Destroyed | Structure is scorched, completely collapsed, partially or completely covred with water or mud, or no longer present. |
 
 ### Dataset Split
-
+The following table depicts how the dataset is splitted when downloading it. 
 |Split|Images and Masks|
 | --- | --- | 
 |Tier1|5596|
@@ -63,6 +60,35 @@ To set up the environment, simply run:
 module load uv
 uv sync
 ```
+### Configuration file:
+| Key                               | Description                                                                 |
+|----------------------------------|-----------------------------------------------------------------------------|
+| `data.user`                      | User Identifier                                    |
+| `data.training_name`             | Folder name containing training images and masks                            |
+| `data.validation_name`           | Folder name containing validation data                                      |
+| `data.test_name`                 | Folder name containing test data                                            |
+| `data.use_main_dataset`          | Whether to use the complete xView2 dataset or a smaller subset              |
+| `data.experiment_group`          | Label for grouping related experiments (used in logs and outputs)           |
+| `data.experiment_id`             | Unique identifier for the current experiment run                            |
+| `training.epochs`                | Number of full passes over the training dataset                             |
+| `training.batch_size`            | Number of samples per batch                                                 |
+| `training.learning_rate`         | Initial learning rate for the optimizer                                     |
+| `training.scheduler.T_0`         | Epochs before first scheduler restart                                       |
+| `training.scheduler.T_mult`      | Factor by which to increase cycle length after each restart                 |
+| `training.scheduler.eta_min`     | Minimum learning rate after cosine annealing restart                        |
+| `training.patience`              | Number of epochs with no improvement before early stopping is triggered     |
+| `training.delta`                 | Minimum loss improvement to reset early stopping                            |
+| `loss_weights.pre`               | Class weights for pre-disaster segmentation (background/building)          |
+| `loss_weights.post`              | Class weights for post-disaster segmentation (damage classes)               |
+| `dataloader.num_workers_multiplier` | Multiplier for determining DataLoader worker count                        |
+| `dataloader.pin_memory`          | Whether to use pinned memory for DataLoader                                 |
+| `foldernames.tensorboard_logs`   | Directory where TensorBoard logs are stored                                 |
+| `foldernames.checkpoints`        | Directory for saving model checkpoints                                      |
+| `foldernames.logfiles`           | Directory for storing training/validation logs                              |
+| `foldernames.class_counts_file`  | File path for class frequency stats used in weighting                       |
+| `foldernames.sample_weights_file`| File path for sample weights used during training                           |
+| `focal_loss.gamma`               | Focal loss parameter to down-weight easy examples                           |
+
 
 # Informations for developers
 ## Model Architecture
@@ -93,6 +119,9 @@ and subtle damage patterns.
 *** Note: Add a histogram of classes ?? ***
 
 ## Training
+Start the training process by changing the parameters of the configuration file (notebooks/00_config.ymal). You need to change the user name to you needs as well es all training parameters. 
+
+
 - Describe which files to use
 - which parameters to set
 - 
