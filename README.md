@@ -37,17 +37,19 @@ xBD: A Dataset for Assessing Building Damage from Satellite Imagery
 ![Beispielbild](graphics/exampleImages.png)
 
 # Structure of the repository and general Information
+
+
 📁 / (XVIEW2SIAMESEUNET) 
-├── 📁 notebooks/ │ 
-├── 📁 utils/ │
-│ ├── 📄 inference.py │
-│ ├── 📄 metrics.py │ │
-├── 📄 training_preparations.py │
-│ ├── 📄 viz.py │
-├── 📄 01_Preprocessing.ipynb │
-├── 📄 02_xview2SiameseUNet.ipynb 
-├── 📄 pyproject.toml 
-├── 📄 README.md
+├── 📁 notebooks/   
+│ ├── 📁 utils/ 
+│ │ ├── 📄 inference.py  
+│ │ ├── 📄 metrics.py  
+│ │ ├── 📄 training_preparations.py   
+│ │ ├── 📄 viz.py  
+│ ├── 📄 01_Preprocessing.ipynb  
+│ ├── 📄 02_xview2SiameseUNet.ipynb   
+├── 📄 pyproject.toml   
+├── 📄 README.md  
 
 ## Getting Started
 
@@ -69,11 +71,11 @@ As a model for building damage assesment a siamese neural network was chosen. It
 A siamese neural network contains at least two identical sub-networks and is used for tasks where two similar images are given and the aim is to detect similiarities or differences. 
 It takes a paired input and gives one output. In this case, for building damage detection the aim was to get a segmentation mask containing the building location and damage grade. 
 The siamese structure allwos to detect changes through direct comparison between pre- and post-disaster building states.
-** U-Net **
+**U-Net**
 The U-Net architecture has a encoder-decoder structure and skip connections. This helps to preserve spatial information, which are critical for building segmentation and damage patterns.
 
 
-** ResNet 50 ** 
+**ResNet50** 
 The ResNet50 was chosen as an encoder. It has a high capability to extract features. A further advantage was the pre-trained backboned. The deep architecture of ResNet50 captures hirachical features that represent different aspect of buildin damage. 
 
 ## Dealing with class imbalances
@@ -90,4 +92,7 @@ and subtle damage patterns.
  
 *** Note: Add a histogram of classes ?? ***
 
-## 
+## Training
+- Describe which files to use
+- which parameters to set
+- 
