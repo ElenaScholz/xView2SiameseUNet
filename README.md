@@ -154,4 +154,6 @@ To run inference for this model use the file 03_user_main.ipynb. More informatio
 
 # Informations for users
 
-If you want to assess building damage 
+If you want to assess building damage run the jupyter notebook 03_user_main.ipynb.
+
+Please note that so far this script is not working with the 

@@ -26,7 +26,7 @@ training:
   # CosineAnnealingWarmRestarts scheduler settings
   scheduler:
     T_0: 20            # Number of epochs before the first restart
-    T_mult: 1.5          # Multiplier for increasing the restart period
+    T_mult: 1         # Multiplier for increasing the restart period
     eta_min: 0.0000001   # Minimum learning rate after a restart
   # Early stopping: how many epochs to wait without improvement
   patience: 20
