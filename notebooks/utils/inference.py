@@ -1,7 +1,7 @@
 # import os
 # from pathlib import Path
-
-# def find_best_checkpoint(checkpoint_dir, experiment_id=experiment_id):
+# import torch
+# def find_best_checkpoint(checkpoint_dir, experiment_id):
 #     """Find checkpoint with lowest validation loss in filename."""
 #     checkpoint_dir = Path(checkpoint_dir)
 #     checkpoints = list(checkpoint_dir.glob(f"*{experiment_id}*.pth"))
@@ -55,8 +55,8 @@ import torch
 import os
 from pathlib import Path
 
-def find_best_checkpoint(checkpoint_dir, experiment_id=experiment_id):
-    """Find checkpoint with lowest validation loss in filename."""
+def find_best_checkpoint(checkpoint_dir, experiment_id):
+    """Find checkpoint with latest modification time (usually best one)."""
     checkpoint_dir = Path(checkpoint_dir)
     checkpoints = list(checkpoint_dir.glob(f"*{experiment_id}*.pth"))
     
@@ -68,24 +68,54 @@ def find_best_checkpoint(checkpoint_dir, experiment_id=experiment_id):
     return latest_checkpoint
 
 
+# def load_checkpoint(model, checkpoint_path, device=None):
+#     """Load model checkpoint, handling DataParallel if needed."""
+#     map_location = device if device else torch.device("cuda" if torch.cuda.is_available() else "cpu")
+#     checkpoint = torch.load(checkpoint_path, map_location=map_location)
+
+#     if 'model_state_dict' not in checkpoint:
+#         raise KeyError("Checkpoint does not contain 'model_state_dict'.")
+
+#     state_dict = checkpoint['model_state_dict']
+
+#     # Remove 'module.' prefix if model was trained with DataParallel
+#     new_state_dict = {}
+#     for k, v in state_dict.items():
+#         new_key = k[7:] if k.startswith('module.') else k
+#         new_state_dict[new_key] = v
+
+#     model.load_state_dict(new_state_dict)
+#     model.to(map_location)
+
+#     print(f"✅ Loaded checkpoint from epoch {checkpoint.get('epoch', '?')} with loss {checkpoint.get('loss', '?')}")
+#     return model
+
 def load_checkpoint(model, checkpoint_path, device=None):
-    """Load model checkpoint, handling DataParallel if needed."""
-    map_location = device if device else torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    checkpoint = torch.load(checkpoint_path, map_location=map_location)
+    if device is None:
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    if 'model_state_dict' not in checkpoint:
-        raise KeyError("Checkpoint does not contain 'model_state_dict'.")
+    checkpoint = torch.load(checkpoint_path, map_location=device)
 
-    state_dict = checkpoint['model_state_dict']
+    # Prüfen, ob es sich um ein vollständiges Checkpoint-Objekt handelt
+    if isinstance(checkpoint, dict) and "model_state_dict" in checkpoint:
+        state_dict = checkpoint["model_state_dict"]
+    else:
+        state_dict = checkpoint  # reines state_dict
 
-    # Remove 'module.' prefix if model was trained with DataParallel
+    # Falls der Schlüssel ein DataParallel-Modell war
     new_state_dict = {}
     for k, v in state_dict.items():
-        new_key = k[7:] if k.startswith('module.') else k
+        new_key = k[7:] if k.startswith("module.") else k
         new_state_dict[new_key] = v
 
     model.load_state_dict(new_state_dict)
-    model.to(map_location)
+    model.to(device)
 
-    print(f"✅ Loaded checkpoint from epoch {checkpoint.get('epoch', '?')} with loss {checkpoint.get('loss', '?')}")
+    if torch.cuda.device_count() > 1:
+        model = torch.nn.DataParallel(model)
+        print("Checkpoint erfolgreich in DataParallel-Modell geladen.")
+    else:
+        print("Checkpoint erfolgreich geladen.")
+
     return model
+

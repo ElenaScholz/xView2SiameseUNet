@@ -20,6 +20,14 @@ from model.siameseNetwork import SiameseUnet
 from model.uNet import UNet_ResNet50
 from model.loss import FocalLoss, combined_loss_function
 import torch
+import yaml
+base_dir = Path(os.getcwd()).parent  # Gehe einen Ordner zurück vom aktuellen Arbeitsverzeichnis
+config_path = base_dir / "notebooks" / "config1.yaml"
+print(base_dir)
+
+with open(config_path, "r") as file:
+    config = yaml.safe_load(file)
+
 
 def inference(model, dataloader):
     model.eval()
@@ -137,18 +145,18 @@ if __name__ == "__main__":
         model.to(device)
         
         # Besten Checkpoint finden und laden
-        from utils.inference import find_best_checkpoint, load_checkpoint  # Anpassen an deine Importstruktur
+        from utils.helperfunctions import find_best_checkpoint, load_checkpoint  # Anpassen an deine Importstruktur
         best_checkpoint_path = find_best_checkpoint(CHECKPOINTS_DIR, EXPERIMENT_ID)
         print(f"Lade besten Checkpoint: {best_checkpoint_path}")
         model = load_checkpoint(model, best_checkpoint_path)
         
         from utils.helperfunctions import get_data_folder
-        DATA_ROOT, TEST_ROOT, TEST_IMG, TEST_LABEL, TEST_TARGET, TEST_PNG_IMAGES = get_data_folder(config["data"]["validation_name"], main_dataset = config["data"]["use_main_dataset"])
+        DATA_ROOT, TEST_ROOT, TEST_IMG, TEST_LABEL, TEST_TARGET, TEST_PNG_IMAGES = get_data_folder(config["data"]["test_name"], main_dataset = config["data"]["use_main_dataset"])
 
         # Testdaten laden
         from utils.dataset import xView2Dataset, collate_fn_test  # Anpassen an deine Importstruktur
         test_dataset = xView2Dataset(
-            png_path=TEST_IMG,
+            png_path=TEST_PNG_IMAGES,
             image_transform=image_transform(),
             inference=True
         )

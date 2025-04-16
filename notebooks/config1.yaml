@@ -9,7 +9,7 @@ data:
   # Folder name for test data
   test_name: "test"
   # Whether to use the full (main) dataset or a subset
-  use_main_dataset: True
+  use_main_dataset: False
   # Group name for organizing experiments (e.g. for logging or comparison)
   experiment_group: "xView2_all_data"
   # Unique experiment ID for tracking runs
