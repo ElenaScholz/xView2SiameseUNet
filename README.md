@@ -29,6 +29,12 @@ The following table depicts how the dataset is splitted when downloading it.
 |Hold|1866|
 |Test|1866|
 
+Above you see the original amount of datasets in each folder:
+
+I created a Train and Validation folder. The Train folder contains all images from Tier1 and 75% of the Images of Tier3, while Validation has all images from the Hold folder as well as 25% of the Tier3 Images.    
+
+So the Trainfolder contains 15148 images and the Validation folder 5052.  
+
 ### Example Images
 
 ![Beispielbild](graphics/exampleImages.png)
