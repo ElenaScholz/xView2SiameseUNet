@@ -9,9 +9,6 @@ The Dataset contains more then 850.000 annotated polygons and damage scores on a
 The datase includes contextual Information as water, fire, smoke or lava. It includes different building types from all around the world as well as negative imagery that do not depict any damage.
 
 
-
-
-
 xBD: A Dataset for Assessing Building Damage from Satellite Imagery
 
 ### Disaster Label:
@@ -24,7 +21,7 @@ xBD: A Dataset for Assessing Building Damage from Satellite Imagery
 | 3 | Destroyed | Structure is scorched, completely collapsed, partially or completely covred with water or mud, or no longer present. |
 
 ### Dataset Split
-
+The following table depicts how the dataset is splitted when downloading it. 
 |Split|Images and Masks|
 | --- | --- | 
 |Tier1|5596|
@@ -93,6 +90,9 @@ and subtle damage patterns.
 *** Note: Add a histogram of classes ?? ***
 
 ## Training
+Start the training process by changing the parameters of the configuration file (notebooks/00_config.ymal). You need to change the user name to you needs as well es all training parameters. 
+
+
 - Describe which files to use
 - which parameters to set
 - 
