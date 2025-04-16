@@ -1,55 +1,76 @@
-# config/config.yaml
-
-# Dataset Pfade
+# === Dataset Configuration ===
 data:
+  # Username or identifier for the data location (e.g. folder name or remote user)
   user: "di97ren"
+  # Folder name for training data
   training_name: "train"
+  # Folder name for validation data
   validation_name: "val"
+  # Folder name for test data
   test_name: "test"
+  # Whether to use the full (main) dataset or a subset
   use_main_dataset: True
+  # Group name for organizing experiments (e.g. for logging or comparison)
   experiment_group: "xView2_all_data"
-  experiment_id: "001"
+  # Unique experiment ID for tracking runs
+  experiment_id: "002"
 
-# Training Parameter
+# === Training Parameters ===
 training:
-  epochs: 80
+  # Number of training epochs
+  epochs: 100
+  # Batch size for training and validation
   batch_size: 8
-  learning_rate: 0.0001
+  # Learning rate for the optimizer
+  learning_rate: 0.00003
+  # CosineAnnealingWarmRestarts scheduler settings
   scheduler:
-    T_0: 10
-    T_mult: 2
-    eta_min: 0.000001
-  patience: 5
-  delta: 0.01
+    T_0: 20            # Number of epochs before the first restart
+    T_mult: 1.5          # Multiplier for increasing the restart period
+    eta_min: 0.0000001   # Minimum learning rate after a restart
+  # Early stopping: how many epochs to wait without improvement
+  patience: 20
+  # Minimum improvement in validation loss to reset early stopping
+  delta: 0.001
 
-# Loss weights
+# === Loss Class Weights ===
 loss_weights:
   pre:
+    # Class weights for the pre-disaster segmentation
+    # 0 = background, 1 = building
     0: 1.0
-    1: 10.0
+    1: 5.0
   post:
-    0: 1.0
-    1: 10.0
-    2: 30.0
-    3: 20.0
-    4: 50.0
-    5: 100.0
+    # Class weights for post-disaster damage segmentation
+    # 0 = background, 1–4 = various damage levels, 5 = destroyed
+    0: 1.0 
+    1: 5.0 # reduced form 10
+    2: 15.0 # reduced from 30
+    3: 10.0 # reduced from 20
+    4: 20.0 # reduced from 50
+    5: 30.0 # reduced from 100
 
-# Dataloader
+# === Dataloader Settings ===
 dataloader:
+  # Multiplier for determining number of data loading workers (based on CPU cores)
   num_workers_multiplier: 4
+  # Whether to use pinned memory for faster GPU transfers
   pin_memory: true
 
-
-
-# Logging und Speicherorte
+# === Logging and Output Paths ===
 foldernames:
+  # Folder for TensorBoard logs
   tensorboard_logs: "tensorboard_logs"
+  # Folder to save model checkpoints
   checkpoints: "checkpoints"
+  # Folder for general log files
   logfiles: "logfiles"
+  # Path to precomputed class count statistics
   class_counts_file: "precalculations/class_counts.json"
+  # Path to precomputed sample weights (used in training)
   sample_weights_file: "precalculations/sample_weights.pt"
 
-# Focal Loss Parameter
+# === Focal Loss Parameters ===
 focal_loss:
-  gamma: 2
+  # Gamma parameter for Focal Loss (focuses more on hard examples)
+  gamma: 1.5 # reduced from 2
