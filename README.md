@@ -240,11 +240,12 @@ Model training ended after 7 Epochs:
 |Precision Training|0.7402|0.2822|
 |Precision Validation|0.7526|0.2959|
 |Recall Training|0.9537|0.4447|
-|Recall Validation|0.9583|0.4769
+|Recall Validation|0.9583|0.4769|
 
 Loss during Training was 0.0178 and during Validation 0.0164. See Image below
 
 ![Loss](graphics/Loss_Subset.png)
+
 
 
 ## Discussion
@@ -265,11 +266,20 @@ Loss during Training was 0.0178 and during Validation 0.0164. See Image below
 To improve the performance the training should be run with the whole dataset.
 
 
-To the point of submission training is still running. 
+To the point of submission training is still running and in Step 11:
 
-![FinalLoss](graphics/Screenshot2025-04-17115537)
+![FinalLoss](graphics/Loss_allData.png)
 
+|Parameter|Pre-Disaster|Post-Disaster|  
+|---------|------------|-------------|
+|F1-Score Training|0.8277| 0.4608|
+|F1-Score Validation |0.8384|0.4777|
+|Precision Training|0.7577|0.3869|
+|Precision Validation|0.7645|0.4036|
+|Recall Training|0.9793|0.8413|
+|Recall Validation|0.9805|0.8294|
 
+These preliminary results indicate a significant improvement within the post disaster Performance of the model. 
 
 The updated parameters can be found below:  
 
