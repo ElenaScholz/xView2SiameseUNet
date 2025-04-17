@@ -118,10 +118,11 @@ A siamese neural network contains at least two identical sub-networks and is use
 It takes a paired input and gives one output. In this case, for building damage detection the aim was to get a segmentation mask containing the building location and damage grade. 
 The siamese structure allwos to detect changes through direct comparison between pre- and post-disaster building states.  
 **U-Net**  
+
 The U-Net architecture has a encoder-decoder structure and skip connections. This helps to preserve spatial information, which are critical for building segmentation and damage patterns.
 
 
-**ResNet50** 
+**ResNet50**   
 The ResNet50 was chosen as an encoder. It has a high capability to extract features. A further advantage was the pre-trained backboned. The deep architecture of ResNet50 captures hirachical features that represent different aspect of buildin damage. 
 
 ## Dealing with class imbalances
