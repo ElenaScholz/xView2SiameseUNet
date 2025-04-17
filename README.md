@@ -158,9 +158,8 @@ The precalculated class counts and weights are stored under
 ├── experiments/  
 │   ├── precalculations/  
 │   │   ├── class_counts.json  
-│   │   └── sample_weights.pth
+│   │   └── sample_weights.pt
 
-Due to the size of those files, they are not in this repository - but will be generated once you run the main script. Computation takes some time but once they are generated you can load them again for each run. 
 
 The model is stored within the checkpoints directory under the filename: 002_best_siamese_unet_state.pth
 
