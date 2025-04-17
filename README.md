@@ -42,9 +42,9 @@ So the Trainfolder contains 15148 images and the Validation folder 5052.
 # Structure of the repository and general Information
 
 
-📁 / (XVIEW2SIAMESEUNET) 
-├── 📁 notebooks/    
-│ ├── 📁 utils/ 
+📁 / (XVIEW2SIAMESEUNET)  
+├── 📁 notebooks/      
+│ ├── 📁 utils/  
 │ │ ├── 📄 dataset.py  
 │ │ ├── 📄 earlyStopping.py  
 │ │ ├── 📄 helperfunctions.py  
@@ -55,16 +55,16 @@ So the Trainfolder contains 15148 images and the Validation folder 5052.
 │ │ ├── 📄 val_step.py  
 │ │ ├── 📄 training_preparations.py   
 │ │ ├── 📄 viz.py  
-│ ├── 📁 model/ 
-│ │ ├── 📄 loss.py  
-│ │ ├── 📄 siameseNetwork.py  
-│ │ ├── 📄 uNet.py  
-│ ├── 📁 predictions_visualization/ 
-│ ├── 📄 00_config.yaml  
-│ ├── 📄 01_data_processing.py
-│ ├── 📄 02_Training.cmd
-│ ├── 📄 02_developer_main.py
-│ ├── 📄 03_inference.ipynb   
+│ ├── 📁 model/   
+│ │ ├── 📄 loss.py    
+│ │ ├── 📄 siameseNetwork.py     
+│ │ ├── 📄 uNet.py    
+│ ├── 📁 predictions_visualization/   
+│ ├── 📄 00_config.yaml    
+│ ├── 📄 01_data_processing.py    
+│ ├── 📄 02_Training.cmd  
+│ ├── 📄 02_developer_main.py  
+│ ├── 📄 03_inference.ipynb     
 ├── 📄 pyproject.toml   
 ├── 📄 README.md  
 
