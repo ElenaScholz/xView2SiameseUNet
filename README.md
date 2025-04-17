@@ -159,3 +159,8 @@ If you want to assess building damage run the jupyter notebook 03_user_main.ipyn
 Please note that so far this script is not working with the 
 
 # Model Performance
+The Model performance was tested with a subset of 200 Images (100 Images pairs) and 100 Images for Validation and Inference. 
+The tensorboard_logs, checkpoints and logfiles are saved in the Homedirectory. 
+
+Under checkpoints the best model is saved as well and can be loaded for training (003_best_siamese_unet_state.pth). 
+
