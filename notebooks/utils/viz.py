@@ -50,40 +50,45 @@ def create_Control_plots(Dataset_Sample):
     # Anzeige der Plots
     #plt.tight_layout()
     plt.show()
-
 def visualize_predictions(results, num_samples=1, random_seed=None, save_dir='predictions_visualizations'):
     import matplotlib.pyplot as plt
     import numpy as np
     import os
-    from matplotlib.colors import ListedColormap
+    from matplotlib.colors import ListedColormap, BoundaryNorm
+    from matplotlib.patches import Patch
     
-    # Erstelle Ausgabeverzeichnis, falls es nicht existiert
+    # Create output directory if it doesn't exist
     os.makedirs(save_dir, exist_ok=True)
     
-    # Definiere Farbkarten und Labels
-    pre_colors = ['#1a9850', '#d73027']  # Grün für "kein Gebäude", Rot für "Gebäude"
+    # Define colorblind-friendly color maps and labels
+    # Using a consistent ColorBrewer palette
+    pre_colors = ['#000000', '#4575b4']  # Black for "no building", Blue for "building"
     pre_cmap = ListedColormap(pre_colors)
-    pre_labels = ['Kein Gebäude', 'Gebäude']
+    pre_labels = ['No Building', 'Building']
+    pre_bounds = [0, 1, 2]
+    pre_norm = BoundaryNorm(pre_bounds, pre_cmap.N)
     
-    # Post-Disaster Farbkarte mit verschiedenen Farben für Schadensklassen
-    post_colors = ['#1a9850',  # Kein Gebäude (Grün)
-                  '#d73027',   # Gebäude, kein Schaden (Rot)
-                  '#fc8d59',   # Leichter Schaden (Orange)
-                  '#fee090',   # Mittlerer Schaden (Gelb)
-                  '#91bfdb',   # Schwerer Schaden (Hellblau)
-                  '#4575b4']   # Zerstört (Dunkelblau)
+    # Post-Disaster color map with different colors for damage classes
+    post_colors = ['#000000',   # Background (black)
+                  '#4575b4',    # No damage (blue)
+                  '#91bfdb',    # Minor damage (light blue)
+                  '#ffffbf',    # Major damage (light yellow)
+                  '#fc8d59',    # Destroyed (orange)
+                  '#004D40']    # Unclassified (green)
     post_cmap = ListedColormap(post_colors)
-    post_labels = ['Kein Gebäude', 'Kein Schaden', 'Leichter Schaden', 
-                   'Mittlerer Schaden', 'Schwerer Schaden', 'Zerstört']
+    post_labels = ['No Building', 'No Damage', 'Minor Damage', 
+                   'Major Damage', 'Destroyed', 'Unclassified']
+    post_bounds = [0, 1, 2, 3, 4, 5, 6]
+    post_norm = BoundaryNorm(post_bounds, post_cmap.N)
     
-    # Zufallsgenerator für reproduzierbare Ergebnisse
+    # Random generator for reproducible results
     rng = np.random.RandomState(random_seed) if random_seed is not None else np.random
     
-    # Bestimme die Anzahl der vorhandenen Samples
+    # Determine the number of available samples
     total_available = len(results['pre_names'])
     num_to_visualize = min(num_samples, total_available)
     
-    # Wähle zufällige Indizes aus
+    # Select random indices
     if num_samples >= total_available:
         selected_indices = np.arange(total_available)
     else:
@@ -97,65 +102,64 @@ def visualize_predictions(results, num_samples=1, random_seed=None, save_dir='pr
         pre_name = results['pre_names'][idx]
         post_name = results['post_names'][idx]
         
-        # Normalisiere Bilder für die Anzeige
+        # Normalize images for display
         pre_img = pre_img.transpose(1, 2, 0)  # CHW -> HWC
         pre_img = (pre_img - pre_img.min()) / (pre_img.max() - pre_img.min() + 1e-8)
         
         post_img = post_img.transpose(1, 2, 0)  # CHW -> HWC
         post_img = (post_img - post_img.min()) / (post_img.max() - post_img.min() + 1e-8)
         
-        # Erstelle Plot
-        fig, axs = plt.subplots(2, 3, figsize=(18, 12))
+        # Create plot
+        fig, axs = plt.subplots(2, 2, figsize=(10, 10))
+        plt.subplots_adjust(wspace=0.05, hspace=0.2)
         
-        # Zeige Pre-Disaster Bild und Vorhersage
+        # Show Pre-Disaster image and prediction
         axs[0, 0].imshow(pre_img)
-        axs[0, 0].set_title(f"Pre-Disaster Bild\n{pre_name}")
+        axs[0, 0].set_title(f"Pre-Disaster Image\n{pre_name}")
         axs[0, 0].axis('off')
         
-        axs[0, 1].imshow(pre_mask, cmap=pre_cmap, vmin=0, vmax=len(pre_colors)-1)
-        axs[0, 1].set_title("Pre-Disaster Vorhersage")
+        axs[0, 1].imshow(pre_mask, cmap=pre_cmap, norm=pre_norm)
+        axs[0, 1].set_title("Pre-Disaster Mask")
         axs[0, 1].axis('off')
         
-        # Zeige Post-Disaster Bild und Vorhersage
+        # Show Post-Disaster image and prediction
         axs[1, 0].imshow(post_img)
-        axs[1, 0].set_title(f"Post-Disaster Bild\n{post_name}")
+        axs[1, 0].set_title(f"Post-Disaster Image\n{post_name}")
         axs[1, 0].axis('off')
         
-        axs[1, 1].imshow(post_mask, cmap=post_cmap, vmin=0, vmax=len(post_colors)-1)
-        axs[1, 1].set_title("Post-Disaster Vorhersage")
+        axs[1, 1].imshow(post_mask, cmap=post_cmap, norm=post_norm)
+        axs[1, 1].set_title("Post-Disaster Mask")
         axs[1, 1].axis('off')
         
-        # Erstelle Legenden
-        axs[0, 2].axis('off')
-        for j, (color, label) in enumerate(zip(pre_colors, pre_labels)):
-            axs[0, 2].add_patch(plt.Rectangle((0.1, 0.9 - j*0.1), 0.1, 0.05, color=color))
-            axs[0, 2].text(0.25, 0.9 - j*0.1, label, fontsize=12, va='center')
-        axs[0, 2].set_title("Pre-Disaster Klassen")
+        # Create legend
+        legend_elements_pre = [Patch(facecolor=pre_colors[j], label=label) for j, label in enumerate(pre_labels)]
+        legend_elements_post = [Patch(facecolor=post_colors[j], label=label) for j, label in enumerate(post_labels)]
         
-        axs[1, 2].axis('off')
-        for j, (color, label) in enumerate(zip(post_colors, post_labels)):
-            axs[1, 2].add_patch(plt.Rectangle((0.1, 0.9 - j*0.1), 0.1, 0.05, color=color))
-            axs[1, 2].text(0.25, 0.9 - j*0.1, label, fontsize=12, va='center')
-        axs[1, 2].set_title("Post-Disaster Klassen")
+        fig.legend(handles=legend_elements_pre + legend_elements_post, 
+                  loc='lower center', 
+                  ncol=3, 
+                  bbox_to_anchor=(0.5, -0.01),
+                  title="Building Classes")
         
-        plt.tight_layout()
-        plt.savefig(os.path.join(save_dir, f"prediction_{i+1}.png"), dpi=150)
+        plt.tight_layout(rect=[0, 0.08, 1, 0.95])
+        plt.suptitle('Building Damage Classification', fontsize=16, y=0.98)
+        plt.savefig(os.path.join(save_dir, f"prediction_{i+1}.png"), dpi=150, bbox_inches='tight')
         plt.close(fig)
     
-    print(f"{num_to_visualize} Visualisierungen wurden im Verzeichnis '{save_dir}' gespeichert.")
+    print(f"{num_to_visualize} visualizations saved in '{save_dir}' directory.")
     
-    # Erstelle zusätzlich eine Übersichtsgrafik der Klassenverteilung
+    # Create a summary graphic of class distribution
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 6))
     
-    # Konvertiere alle Vorhersagen zu einem großen Array
+    # Convert all predictions to a large array
     all_pre_preds = np.concatenate(results['pre_predictions'])
     all_post_preds = np.concatenate(results['post_predictions'])
     
-    # Zähle die Klassenhäufigkeiten
+    # Count class frequencies
     pre_classes, pre_counts = np.unique(all_pre_preds, return_counts=True)
     post_classes, post_counts = np.unique(all_post_preds, return_counts=True)
     
-    # Fülle fehlende Klassen mit 0 auf
+    # Fill missing classes with 0
     full_pre_counts = np.zeros(len(pre_labels))
     full_post_counts = np.zeros(len(post_labels))
     
@@ -167,155 +171,291 @@ def visualize_predictions(results, num_samples=1, random_seed=None, save_dir='pr
         if 0 <= cls < len(post_labels):
             full_post_counts[cls] = count
     
-    # Plotte Histogramme
+    # Plot histograms
     ax1.bar(range(len(pre_labels)), full_pre_counts, color=pre_colors)
     ax1.set_xticks(range(len(pre_labels)))
     ax1.set_xticklabels(pre_labels, rotation=45, ha='right')
-    ax1.set_title('Pre-Disaster Klassenverteilung')
-    ax1.set_ylabel('Anzahl Pixel')
+    ax1.set_title('Pre-Disaster Class Distribution')
+    ax1.set_ylabel('Pixel Count')
     
     ax2.bar(range(len(post_labels)), full_post_counts, color=post_colors)
     ax2.set_xticks(range(len(post_labels)))
     ax2.set_xticklabels(post_labels, rotation=45, ha='right')
-    ax2.set_title('Post-Disaster Klassenverteilung')
-    ax2.set_ylabel('Anzahl Pixel')
+    ax2.set_title('Post-Disaster Class Distribution')
+    ax2.set_ylabel('Pixel Count')
     
     plt.tight_layout()
     plt.savefig(os.path.join(save_dir, "class_distribution.png"), dpi=150)
     plt.close()
     
-    print(f"Klassenverteilungen wurden in '{save_dir}/class_distribution.png' gespeichert.")
+    print(f"Class distribution saved in '{save_dir}/class_distribution.png'.")
 
-    import matplotlib.pyplot as plt
-    import numpy as np
-    import os
-    from matplotlib.colors import ListedColormap
+
+# def visualize_predictions(results, num_samples=1, random_seed=None, save_dir='predictions_visualizations'):
+#     import matplotlib.pyplot as plt
+#     import numpy as np
+#     import os
+#     from matplotlib.colors import ListedColormap
     
-    # Erstelle Ausgabeverzeichnis, falls es nicht existiert
-    os.makedirs(save_dir, exist_ok=True)
+#     # Erstelle Ausgabeverzeichnis, falls es nicht existiert
+#     os.makedirs(save_dir, exist_ok=True)
     
-    # Definiere Farbkarten und Labels
-    pre_colors = ['#1a9850', '#d73027']  # Grün für "kein Gebäude", Rot für "Gebäude"
-    pre_cmap = ListedColormap(pre_colors)
-    pre_labels = ['Kein Gebäude', 'Gebäude']
+#     # Definiere Farbkarten und Labels
+#     pre_colors = ['#1a9850', '#d73027']  # Grün für "kein Gebäude", Rot für "Gebäude"
+#     pre_cmap = ListedColormap(pre_colors)
+#     pre_labels = ['Kein Gebäude', 'Gebäude']
     
-    # Post-Disaster Farbkarte mit verschiedenen Farben für Schadensklassen
-    post_colors = ['#1a9850',  # Kein Gebäude (Grün)
-                  '#d73027',   # Gebäude, kein Schaden (Rot)
-                  '#fc8d59',   # Leichter Schaden (Orange)
-                  '#fee090',   # Mittlerer Schaden (Gelb)
-                  '#91bfdb',   # Schwerer Schaden (Hellblau)
-                  '#4575b4']   # Zerstört (Dunkelblau)
-    post_cmap = ListedColormap(post_colors)
-    post_labels = ['Kein Gebäude', 'Kein Schaden', 'Leichter Schaden', 
-                   'Mittlerer Schaden', 'Schwerer Schaden', 'Zerstört']
+#     # Post-Disaster Farbkarte mit verschiedenen Farben für Schadensklassen
+#     post_colors = ['#1a9850',  # Kein Gebäude (Grün)
+#                   '#d73027',   # Gebäude, kein Schaden (Rot)
+#                   '#fc8d59',   # Leichter Schaden (Orange)
+#                   '#fee090',   # Mittlerer Schaden (Gelb)
+#                   '#91bfdb',   # Schwerer Schaden (Hellblau)
+#                   '#4575b4']   # Zerstört (Dunkelblau)
+#     post_cmap = ListedColormap(post_colors)
+#     post_labels = ['Kein Gebäude', 'Kein Schaden', 'Leichter Schaden', 
+#                    'Mittlerer Schaden', 'Schwerer Schaden', 'Zerstört']
     
-    # Zufallsgenerator für reproduzierbare Ergebnisse
-    rng = np.random.RandomState(random_seed) if random_seed is not None else np.random
+#     # Zufallsgenerator für reproduzierbare Ergebnisse
+#     rng = np.random.RandomState(random_seed) if random_seed is not None else np.random
     
-    # Bestimme die Anzahl der vorhandenen Samples
-    total_available = len(results['pre_names'])
-    num_to_visualize = min(num_samples, total_available)
+#     # Bestimme die Anzahl der vorhandenen Samples
+#     total_available = len(results['pre_names'])
+#     num_to_visualize = min(num_samples, total_available)
     
-    # Wähle zufällige Indizes aus
-    if num_samples >= total_available:
-        selected_indices = np.arange(total_available)
-    else:
-        selected_indices = rng.choice(total_available, num_to_visualize, replace=False)
+#     # Wähle zufällige Indizes aus
+#     if num_samples >= total_available:
+#         selected_indices = np.arange(total_available)
+#     else:
+#         selected_indices = rng.choice(total_available, num_to_visualize, replace=False)
     
-    for i, idx in enumerate(selected_indices):
-        pre_img = results['pre_images'][idx]
-        post_img = results['post_images'][idx]
-        pre_mask = results['pre_predictions'][idx]
-        post_mask = results['post_predictions'][idx]
-        pre_name = results['pre_names'][idx]
-        post_name = results['post_names'][idx]
+#     for i, idx in enumerate(selected_indices):
+#         pre_img = results['pre_images'][idx]
+#         post_img = results['post_images'][idx]
+#         pre_mask = results['pre_predictions'][idx]
+#         post_mask = results['post_predictions'][idx]
+#         pre_name = results['pre_names'][idx]
+#         post_name = results['post_names'][idx]
         
-        # Normalisiere Bilder für die Anzeige
-        pre_img = pre_img.transpose(1, 2, 0)  # CHW -> HWC
-        pre_img = (pre_img - pre_img.min()) / (pre_img.max() - pre_img.min() + 1e-8)
+#         # Normalisiere Bilder für die Anzeige
+#         pre_img = pre_img.transpose(1, 2, 0)  # CHW -> HWC
+#         pre_img = (pre_img - pre_img.min()) / (pre_img.max() - pre_img.min() + 1e-8)
         
-        post_img = post_img.transpose(1, 2, 0)  # CHW -> HWC
-        post_img = (post_img - post_img.min()) / (post_img.max() - post_img.min() + 1e-8)
+#         post_img = post_img.transpose(1, 2, 0)  # CHW -> HWC
+#         post_img = (post_img - post_img.min()) / (post_img.max() - post_img.min() + 1e-8)
         
-        # Erstelle Plot
-        fig, axs = plt.subplots(2, 3, figsize=(18, 12))
+#         # Erstelle Plot
+#         fig, axs = plt.subplots(2, 3, figsize=(18, 12))
         
-        # Zeige Pre-Disaster Bild und Vorhersage
-        axs[0, 0].imshow(pre_img)
-        axs[0, 0].set_title(f"Pre-Disaster Bild\n{pre_name}")
-        axs[0, 0].axis('off')
+#         # Zeige Pre-Disaster Bild und Vorhersage
+#         axs[0, 0].imshow(pre_img)
+#         axs[0, 0].set_title(f"Pre-Disaster Bild\n{pre_name}")
+#         axs[0, 0].axis('off')
         
-        axs[0, 1].imshow(pre_mask, cmap=pre_cmap, vmin=0, vmax=len(pre_colors)-1)
-        axs[0, 1].set_title("Pre-Disaster Vorhersage")
-        axs[0, 1].axis('off')
+#         axs[0, 1].imshow(pre_mask, cmap=pre_cmap, vmin=0, vmax=len(pre_colors)-1)
+#         axs[0, 1].set_title("Pre-Disaster Vorhersage")
+#         axs[0, 1].axis('off')
         
-        # Zeige Post-Disaster Bild und Vorhersage
-        axs[1, 0].imshow(post_img)
-        axs[1, 0].set_title(f"Post-Disaster Bild\n{post_name}")
-        axs[1, 0].axis('off')
+#         # Zeige Post-Disaster Bild und Vorhersage
+#         axs[1, 0].imshow(post_img)
+#         axs[1, 0].set_title(f"Post-Disaster Bild\n{post_name}")
+#         axs[1, 0].axis('off')
         
-        axs[1, 1].imshow(post_mask, cmap=post_cmap, vmin=0, vmax=len(post_colors)-1)
-        axs[1, 1].set_title("Post-Disaster Vorhersage")
-        axs[1, 1].axis('off')
+#         axs[1, 1].imshow(post_mask, cmap=post_cmap, vmin=0, vmax=len(post_colors)-1)
+#         axs[1, 1].set_title("Post-Disaster Vorhersage")
+#         axs[1, 1].axis('off')
         
-        # Erstelle Legenden
-        axs[0, 2].axis('off')
-        for j, (color, label) in enumerate(zip(pre_colors, pre_labels)):
-            axs[0, 2].add_patch(plt.Rectangle((0.1, 0.9 - j*0.1), 0.1, 0.05, color=color))
-            axs[0, 2].text(0.25, 0.9 - j*0.1, label, fontsize=12, va='center')
-        axs[0, 2].set_title("Pre-Disaster Klassen")
+#         # Erstelle Legenden
+#         axs[0, 2].axis('off')
+#         for j, (color, label) in enumerate(zip(pre_colors, pre_labels)):
+#             axs[0, 2].add_patch(plt.Rectangle((0.1, 0.9 - j*0.1), 0.1, 0.05, color=color))
+#             axs[0, 2].text(0.25, 0.9 - j*0.1, label, fontsize=12, va='center')
+#         axs[0, 2].set_title("Pre-Disaster Klassen")
         
-        axs[1, 2].axis('off')
-        for j, (color, label) in enumerate(zip(post_colors, post_labels)):
-            axs[1, 2].add_patch(plt.Rectangle((0.1, 0.9 - j*0.1), 0.1, 0.05, color=color))
-            axs[1, 2].text(0.25, 0.9 - j*0.1, label, fontsize=12, va='center')
-        axs[1, 2].set_title("Post-Disaster Klassen")
+#         axs[1, 2].axis('off')
+#         for j, (color, label) in enumerate(zip(post_colors, post_labels)):
+#             axs[1, 2].add_patch(plt.Rectangle((0.1, 0.9 - j*0.1), 0.1, 0.05, color=color))
+#             axs[1, 2].text(0.25, 0.9 - j*0.1, label, fontsize=12, va='center')
+#         axs[1, 2].set_title("Post-Disaster Klassen")
         
-        plt.tight_layout()
-        plt.savefig(os.path.join(save_dir, f"prediction_{i+1}.png"), dpi=150)
-        plt.close(fig)
+#         plt.tight_layout()
+#         plt.savefig(os.path.join(save_dir, f"prediction_{i+1}.png"), dpi=150)
+#         plt.close(fig)
     
-    print(f"{num_to_visualize} Visualisierungen wurden im Verzeichnis '{save_dir}' gespeichert.")
+#     print(f"{num_to_visualize} Visualisierungen wurden im Verzeichnis '{save_dir}' gespeichert.")
     
-    # Erstelle zusätzlich eine Übersichtsgrafik der Klassenverteilung
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 6))
+#     # Erstelle zusätzlich eine Übersichtsgrafik der Klassenverteilung
+#     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 6))
     
-    # Konvertiere alle Vorhersagen zu einem großen Array
-    all_pre_preds = np.concatenate(results['pre_predictions'])
-    all_post_preds = np.concatenate(results['post_predictions'])
+#     # Konvertiere alle Vorhersagen zu einem großen Array
+#     all_pre_preds = np.concatenate(results['pre_predictions'])
+#     all_post_preds = np.concatenate(results['post_predictions'])
     
-    # Zähle die Klassenhäufigkeiten
-    pre_classes, pre_counts = np.unique(all_pre_preds, return_counts=True)
-    post_classes, post_counts = np.unique(all_post_preds, return_counts=True)
+#     # Zähle die Klassenhäufigkeiten
+#     pre_classes, pre_counts = np.unique(all_pre_preds, return_counts=True)
+#     post_classes, post_counts = np.unique(all_post_preds, return_counts=True)
     
-    # Fülle fehlende Klassen mit 0 auf
-    full_pre_counts = np.zeros(len(pre_labels))
-    full_post_counts = np.zeros(len(post_labels))
+#     # Fülle fehlende Klassen mit 0 auf
+#     full_pre_counts = np.zeros(len(pre_labels))
+#     full_post_counts = np.zeros(len(post_labels))
     
-    for cls, count in zip(pre_classes, pre_counts):
-        if 0 <= cls < len(pre_labels):
-            full_pre_counts[cls] = count
+#     for cls, count in zip(pre_classes, pre_counts):
+#         if 0 <= cls < len(pre_labels):
+#             full_pre_counts[cls] = count
             
-    for cls, count in zip(post_classes, post_counts):
-        if 0 <= cls < len(post_labels):
-            full_post_counts[cls] = count
+#     for cls, count in zip(post_classes, post_counts):
+#         if 0 <= cls < len(post_labels):
+#             full_post_counts[cls] = count
     
-    # Plotte Histogramme
-    ax1.bar(range(len(pre_labels)), full_pre_counts, color=pre_colors)
-    ax1.set_xticks(range(len(pre_labels)))
-    ax1.set_xticklabels(pre_labels, rotation=45, ha='right')
-    ax1.set_title('Pre-Disaster Klassenverteilung')
-    ax1.set_ylabel('Anzahl Pixel')
+#     # Plotte Histogramme
+#     ax1.bar(range(len(pre_labels)), full_pre_counts, color=pre_colors)
+#     ax1.set_xticks(range(len(pre_labels)))
+#     ax1.set_xticklabels(pre_labels, rotation=45, ha='right')
+#     ax1.set_title('Pre-Disaster Klassenverteilung')
+#     ax1.set_ylabel('Anzahl Pixel')
     
-    ax2.bar(range(len(post_labels)), full_post_counts, color=post_colors)
-    ax2.set_xticks(range(len(post_labels)))
-    ax2.set_xticklabels(post_labels, rotation=45, ha='right')
-    ax2.set_title('Post-Disaster Klassenverteilung')
-    ax2.set_ylabel('Anzahl Pixel')
+#     ax2.bar(range(len(post_labels)), full_post_counts, color=post_colors)
+#     ax2.set_xticks(range(len(post_labels)))
+#     ax2.set_xticklabels(post_labels, rotation=45, ha='right')
+#     ax2.set_title('Post-Disaster Klassenverteilung')
+#     ax2.set_ylabel('Anzahl Pixel')
     
-    plt.tight_layout()
-    plt.savefig(os.path.join(save_dir, "class_distribution.png"), dpi=150)
-    plt.close()
+#     plt.tight_layout()
+#     plt.savefig(os.path.join(save_dir, "class_distribution.png"), dpi=150)
+#     plt.close()
     
-    print(f"Klassenverteilungen wurden in '{save_dir}/class_distribution.png' gespeichert.")
+#     print(f"Klassenverteilungen wurden in '{save_dir}/class_distribution.png' gespeichert.")
+
+#     import matplotlib.pyplot as plt
+#     import numpy as np
+#     import os
+#     from matplotlib.colors import ListedColormap
+    
+#     # Erstelle Ausgabeverzeichnis, falls es nicht existiert
+#     os.makedirs(save_dir, exist_ok=True)
+    
+#     # Definiere Farbkarten und Labels
+#     pre_colors = ['#1a9850', '#d73027']  # Grün für "kein Gebäude", Rot für "Gebäude"
+#     pre_cmap = ListedColormap(pre_colors)
+#     pre_labels = ['Kein Gebäude', 'Gebäude']
+    
+#     # Post-Disaster Farbkarte mit verschiedenen Farben für Schadensklassen
+#     post_colors = ['#1a9850',  # Kein Gebäude (Grün)
+#                   '#d73027',   # Gebäude, kein Schaden (Rot)
+#                   '#fc8d59',   # Leichter Schaden (Orange)
+#                   '#fee090',   # Mittlerer Schaden (Gelb)
+#                   '#91bfdb',   # Schwerer Schaden (Hellblau)
+#                   '#4575b4']   # Zerstört (Dunkelblau)
+#     post_cmap = ListedColormap(post_colors)
+#     post_labels = ['Kein Gebäude', 'Kein Schaden', 'Leichter Schaden', 
+#                    'Mittlerer Schaden', 'Schwerer Schaden', 'Zerstört']
+    
+#     # Zufallsgenerator für reproduzierbare Ergebnisse
+#     rng = np.random.RandomState(random_seed) if random_seed is not None else np.random
+    
+#     # Bestimme die Anzahl der vorhandenen Samples
+#     total_available = len(results['pre_names'])
+#     num_to_visualize = min(num_samples, total_available)
+    
+#     # Wähle zufällige Indizes aus
+#     if num_samples >= total_available:
+#         selected_indices = np.arange(total_available)
+#     else:
+#         selected_indices = rng.choice(total_available, num_to_visualize, replace=False)
+    
+#     for i, idx in enumerate(selected_indices):
+#         pre_img = results['pre_images'][idx]
+#         post_img = results['post_images'][idx]
+#         pre_mask = results['pre_predictions'][idx]
+#         post_mask = results['post_predictions'][idx]
+#         pre_name = results['pre_names'][idx]
+#         post_name = results['post_names'][idx]
+        
+#         # Normalisiere Bilder für die Anzeige
+#         pre_img = pre_img.transpose(1, 2, 0)  # CHW -> HWC
+#         pre_img = (pre_img - pre_img.min()) / (pre_img.max() - pre_img.min() + 1e-8)
+        
+#         post_img = post_img.transpose(1, 2, 0)  # CHW -> HWC
+#         post_img = (post_img - post_img.min()) / (post_img.max() - post_img.min() + 1e-8)
+        
+#         # Erstelle Plot
+#         fig, axs = plt.subplots(2, 3, figsize=(18, 12))
+        
+#         # Zeige Pre-Disaster Bild und Vorhersage
+#         axs[0, 0].imshow(pre_img)
+#         axs[0, 0].set_title(f"Pre-Disaster Bild\n{pre_name}")
+#         axs[0, 0].axis('off')
+        
+#         axs[0, 1].imshow(pre_mask, cmap=pre_cmap, vmin=0, vmax=len(pre_colors)-1)
+#         axs[0, 1].set_title("Pre-Disaster Vorhersage")
+#         axs[0, 1].axis('off')
+        
+#         # Zeige Post-Disaster Bild und Vorhersage
+#         axs[1, 0].imshow(post_img)
+#         axs[1, 0].set_title(f"Post-Disaster Bild\n{post_name}")
+#         axs[1, 0].axis('off')
+        
+#         axs[1, 1].imshow(post_mask, cmap=post_cmap, vmin=0, vmax=len(post_colors)-1)
+#         axs[1, 1].set_title("Post-Disaster Vorhersage")
+#         axs[1, 1].axis('off')
+        
+#         # Erstelle Legenden
+#         axs[0, 2].axis('off')
+#         for j, (color, label) in enumerate(zip(pre_colors, pre_labels)):
+#             axs[0, 2].add_patch(plt.Rectangle((0.1, 0.9 - j*0.1), 0.1, 0.05, color=color))
+#             axs[0, 2].text(0.25, 0.9 - j*0.1, label, fontsize=12, va='center')
+#         axs[0, 2].set_title("Pre-Disaster Klassen")
+        
+#         axs[1, 2].axis('off')
+#         for j, (color, label) in enumerate(zip(post_colors, post_labels)):
+#             axs[1, 2].add_patch(plt.Rectangle((0.1, 0.9 - j*0.1), 0.1, 0.05, color=color))
+#             axs[1, 2].text(0.25, 0.9 - j*0.1, label, fontsize=12, va='center')
+#         axs[1, 2].set_title("Post-Disaster Klassen")
+        
+#         plt.tight_layout()
+#         plt.savefig(os.path.join(save_dir, f"prediction_{i+1}.png"), dpi=150)
+#         plt.close(fig)
+    
+#     print(f"{num_to_visualize} Visualisierungen wurden im Verzeichnis '{save_dir}' gespeichert.")
+    
+#     # Erstelle zusätzlich eine Übersichtsgrafik der Klassenverteilung
+#     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 6))
+    
+#     # Konvertiere alle Vorhersagen zu einem großen Array
+#     all_pre_preds = np.concatenate(results['pre_predictions'])
+#     all_post_preds = np.concatenate(results['post_predictions'])
+    
+#     # Zähle die Klassenhäufigkeiten
+#     pre_classes, pre_counts = np.unique(all_pre_preds, return_counts=True)
+#     post_classes, post_counts = np.unique(all_post_preds, return_counts=True)
+    
+#     # Fülle fehlende Klassen mit 0 auf
+#     full_pre_counts = np.zeros(len(pre_labels))
+#     full_post_counts = np.zeros(len(post_labels))
+    
+#     for cls, count in zip(pre_classes, pre_counts):
+#         if 0 <= cls < len(pre_labels):
+#             full_pre_counts[cls] = count
+            
+#     for cls, count in zip(post_classes, post_counts):
+#         if 0 <= cls < len(post_labels):
+#             full_post_counts[cls] = count
+    
+#     # Plotte Histogramme
+#     ax1.bar(range(len(pre_labels)), full_pre_counts, color=pre_colors)
+#     ax1.set_xticks(range(len(pre_labels)))
+#     ax1.set_xticklabels(pre_labels, rotation=45, ha='right')
+#     ax1.set_title('Pre-Disaster Klassenverteilung')
+#     ax1.set_ylabel('Anzahl Pixel')
+    
+#     ax2.bar(range(len(post_labels)), full_post_counts, color=post_colors)
+#     ax2.set_xticks(range(len(post_labels)))
+#     ax2.set_xticklabels(post_labels, rotation=45, ha='right')
+#     ax2.set_title('Post-Disaster Klassenverteilung')
+#     ax2.set_ylabel('Anzahl Pixel')
+    
+#     plt.tight_layout()
+#     plt.savefig(os.path.join(save_dir, "class_distribution.png"), dpi=150)
+#     plt.close()
+    
+#     print(f"Klassenverteilungen wurden in '{save_dir}/class_distribution.png' gespeichert.")
