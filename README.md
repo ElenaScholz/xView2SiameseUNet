@@ -164,3 +164,122 @@ The tensorboard_logs, checkpoints and logfiles are saved in the Homedirectory.
 
 Under checkpoints the best model is saved as well and can be loaded for training (003_best_siamese_unet_state.pth). 
 
+
+## === Training Parameters ===
+training:
+  *Number of training epochs*
+  epochs: 80
+  Batch size for training and validation
+  batch_size: 8
+  Learning rate for the optimizer
+  learning_rate: 0.0001
+  *CosineAnnealingWarmRestarts scheduler settings*
+  scheduler:
+    T_0: 10            *Number of epochs before the first restart*
+    T_mult: 2          *Multiplier for increasing the restart period*
+    eta_min: 0.000001  *Minimum learning rate after a restart*
+  *Early stopping: how many epochs to wait without improvement*
+  patience: 5
+  *Minimum improvement in validation loss to reset early stopping*
+  delta: 0.01
+
+## === Loss Class Weights ===
+loss_weights:
+  pre:
+    *Class weights for the pre-disaster segmentation
+    0 = background, 1 = building*
+    0: 1.0
+    1: 10.0
+  post:
+    *Class weights for post-disaster damage segmentation
+    0 = background, 1–4 = various damage levels, 5 = destroyed*
+    0: 1.0
+    1: 10.0
+    2: 30.0
+    3: 20.0
+    4: 50.0
+    5: 100.0
+
+## === Dataloader Settings ===
+dataloader:
+  *Multiplier for determining number of data loading workers (based on CPU cores)*
+  num_workers_multiplier: 4
+  *Whether to use pinned memory for faster GPU transfers*
+  pin_memory: true
+
+## Results:
+Model training ended after 7 Epochs:
+
+|Parameter|Pre-Disaster|Post-Disaster|  
+|---------|------------|-------------|
+|F1-Score Training|0.8184| 0.2957
+|F1-Score Validation |0.8184|0.3205|
+|Precision Training|0.7402|0.2822|
+|Precision Validation|0.7526|0.2959|
+|Recall Training|0.9537|0.4447|
+|Recall Validation|0.9583|0.4769
+
+Loss during Training was 0.0178 and during Validation 0.0164. See Image below
+
+![Loss](graphics/Loss_Subset.png)
+
+
+## Discussion
+### Results
+- Early Training Termination: The Training Ended after only 7 of 80 planned Epochs. Possible reasons are the very strickt Early Stopping after only 5 Epochs when the validation loss lacks to improve. 
+- The results show a divergence between Pre- and Post-disaster Results. While Pre-disaster detection shows a solid performance, Post-disaster Detection is significantly weaker
+- In Pre- and Post Desaster Classification recall is higher then precision which suggests a tendency towards over-classification
+- Validation trend is positive and slightly better then Training therefore no overfitting is occuring
+
+### Possible causes for Weak Post disaster Performance
+
+- Class Complexity: Post-disaster classification includes 6 classes (background + 5 damage classes) compared to only 2 classes (background + building) in pre-disaster detection.
+- Class Imbalance: The high weightings for post-disaster classes (up to 100 for destroyed buildings) indicate severely imbalanced classes.
+- Data Scarcity: Using a small subset (100 image pairs) may be insufficient, especially for detecting rarer damage classes.
+
+### Training Parameters and Optimization Potential
+
+- Class Complexity: Post-disaster classification includes 6 classes (background + 5 damage classes) compared to only 2 classes (background + building) in pre-disaster detection.
+- Class Imbalance: The high weightings for post-disaster classes (up to 100 for destroyed buildings) indicate severely imbalanced classes.
+- Data Scarcity: Using a small subset (100 image pairs) may be insufficient, especially for detecting rarer damage classes.
+
+## Improving the training process
+To improve the performance the training should be run with the whole dataset (to the point of submission training is still running)
+
+The updated parameters can be found below:
+
+
+### === Training Parameters ===
+training:
+  *Number of training epochs*
+  epochs: 100
+  *Batch size for training and validation*
+  batch_size: 8
+  *Learning rate for the optimizer*
+  learning_rate: 0.00003 
+  *CosineAnnealingWarmRestarts scheduler settings*
+  scheduler:
+    T_0: 20            *Number of epochs before the first restart*
+    T_mult: 1         *Multiplier for increasing the restart period*
+    eta_min: 0.0000001   *Minimum learning rate after a restart*
+  *Early stopping: how many epochs to wait without improvement*
+  patience: 20
+  *Minimum improvement in validation loss to reset early stopping*
+  delta: 0.001
+
+### === Loss Class Weights ===
+loss_weights:
+  pre:
+    *Class weights for the pre-disaster segmentation
+    0 = background, 1 = building*
+    0: 1.0
+    1: 5.0
+  post:
+    *Class weights for post-disaster damage segmentation
+    0 = background, 1–4 = various damage levels, 5 = destroyed*
+    0: 1.0 
+    1: 5.0 # reduced form 10
+    2: 15.0 # reduced from 30
+    3: 10.0 # reduced from 20
+    4: 20.0 # reduced from 50
+    5: 30.0 # reduced from 100

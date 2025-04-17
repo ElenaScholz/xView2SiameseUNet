@@ -22,7 +22,7 @@ training:
   # Batch size for training and validation
   batch_size: 8
   # Learning rate for the optimizer
-  learning_rate: 0.00003
+  learning_rate: 0.00003 
   # CosineAnnealingWarmRestarts scheduler settings
   scheduler:
     T_0: 20            # Number of epochs before the first restart
