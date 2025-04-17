@@ -262,7 +262,14 @@ Loss during Training was 0.0178 and during Validation 0.0164. See Image below
 
 
 ## Improving the training process  
-To improve the performance the training should be run with the whole dataset (to the point of submission training is still running)  
+To improve the performance the training should be run with the whole dataset.
+
+
+To the point of submission training is still running. 
+
+![FinalLoss](graphics/Screenshot2025-04-17115537)
+
+
 
 The updated parameters can be found below:  
 
