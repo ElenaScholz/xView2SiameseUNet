@@ -171,7 +171,7 @@ If you want to assess building damage run the jupyter notebook 03_inference.ipyn
 
 Please note that the Script is only tested with a subset of the xView2 Dataset and previously crashed with the complete dataset.
 
-## Results of Inference:
+## Prediction
 Below you can find the distribution of pixels for the inference and a few sample plots. 
 
 Note, that the images are still transformed. 
