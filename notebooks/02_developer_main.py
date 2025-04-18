@@ -44,17 +44,17 @@ USER_HOME_PATH = Path(f"/dss/dsshome1/08/{USER}")
 # Pathes to store experiment informations in:
 EXPERIMENT_GROUP = config["data"]["experiment_group"]
 EXPERIMENT_ID = config["data"]["experiment_id"]
-EXPERIMENT_DIR = USER_HOME_PATH / EXPERIMENT_GROUP / "tensorboard_logs" / EXPERIMENT_ID
+EXPERIMENT_DIR = DATA_ROOT / EXPERIMENT_GROUP / "tensorboard_logs" / EXPERIMENT_ID
 EXPERIMENT_DIR.mkdir(parents=True, exist_ok=True)
 
 print(EXPERIMENT_DIR)
 
 # Auch Checkpoints-Verzeichnis erstellen
-CHECKPOINTS_DIR = USER_HOME_PATH / EXPERIMENT_GROUP / "checkpoints" / EXPERIMENT_ID
+CHECKPOINTS_DIR = DATA_ROOT / EXPERIMENT_GROUP / "checkpoints" / EXPERIMENT_ID
 CHECKPOINTS_DIR.mkdir(parents=True, exist_ok=True)
 
 # Logfiles-Verzeichnis erstellen
-LOGFILES_DIR = USER_HOME_PATH / EXPERIMENT_GROUP / "logfiles" / EXPERIMENT_ID
+LOGFILES_DIR = DATA_ROOT / EXPERIMENT_GROUP / "logfiles" / EXPERIMENT_ID
 LOGFILES_DIR.mkdir(parents=True, exist_ok=True)
 print(f"Logfiles werden gespeichert in: {LOGFILES_DIR}")
 
