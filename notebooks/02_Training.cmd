@@ -5,13 +5,13 @@
 #SBATCH -D /dss/dsstbyfs02/pn49ci/pn49ci-dss-0022/users/di97ren
 #SBATCH --clusters=hpda2
 #SBATCH --partition=hpda2_compute_gpu
-#SBATCH --gres=gpu:1
+#SBATCH --gres=gpu:2
 #SBATCH --cpus-per-task=40    
 #SBATCH --mem=100gb
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=elena.scholz@stud-mail.uni-wuerzburg.de
 #SBATCH --export=NONE
-#SBATCH --time=40:00:00
+#SBATCH --time=80:00:00
 #SBATCH --account=pn39sa-c
 
 # Lade Module
