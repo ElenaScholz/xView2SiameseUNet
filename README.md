@@ -8,7 +8,7 @@ The Dataset contains more then 850.000 annotated polygons and damage scores on a
 
 The datase includes contextual Information as water, fire, smoke or lava. It includes different building types from all around the world as well as negative imagery that do not depict any damage.
 
-
+For more information see the paper: 
 xBD: A Dataset for Assessing Building Damage from Satellite Imagery
 
 ### Disaster Label:
@@ -42,9 +42,9 @@ So the Trainfolder contains 15148 images and the Validation folder 5052.
 # Structure of the repository and general Information
 
 
-📁 / (XVIEW2SIAMESEUNET) 
-├── 📁 notebooks/    
-│ ├── 📁 utils/ 
+📁 / (XVIEW2SIAMESEUNET)  
+├── 📁 notebooks/      
+│ ├── 📁 utils/  
 │ │ ├── 📄 dataset.py  
 │ │ ├── 📄 earlyStopping.py  
 │ │ ├── 📄 helperfunctions.py  
@@ -55,16 +55,16 @@ So the Trainfolder contains 15148 images and the Validation folder 5052.
 │ │ ├── 📄 val_step.py  
 │ │ ├── 📄 training_preparations.py   
 │ │ ├── 📄 viz.py  
-│ ├── 📁 model/ 
-│ │ ├── 📄 loss.py  
-│ │ ├── 📄 siameseNetwork.py  
-│ │ ├── 📄 uNet.py  
-│ ├── 📁 predictions_visualization/ 
-│ ├── 📄 00_config.yaml  
-│ ├── 📄 01_data_processing.py
-│ ├── 📄 02_Training.cmd
-│ ├── 📄 02_developer_main.py
-│ ├── 📄 03_inference.ipynb   
+│ ├── 📁 model/   
+│ │ ├── 📄 loss.py    
+│ │ ├── 📄 siameseNetwork.py     
+│ │ ├── 📄 uNet.py    
+│ ├── 📁 predictions_visualization/   
+│ ├── 📄 00_config.yaml    
+│ ├── 📄 01_data_processing.py    
+│ ├── 📄 02_Training.cmd  
+│ ├── 📄 02_developer_main.py  
+│ ├── 📄 03_inference.ipynb     
 ├── 📄 pyproject.toml   
 ├── 📄 README.md  
 
@@ -116,19 +116,22 @@ As a model for building damage assesment a siamese neural network was chosen. It
 ### Siamese Neural Network
 A siamese neural network contains at least two identical sub-networks and is used for tasks where two similar images are given and the aim is to detect similiarities or differences. 
 It takes a paired input and gives one output. In this case, for building damage detection the aim was to get a segmentation mask containing the building location and damage grade. 
-The siamese structure allwos to detect changes through direct comparison between pre- and post-disaster building states.
-**U-Net**
+The siamese structure allwos to detect changes through direct comparison between pre- and post-disaster building states.  
+**U-Net**  
+
 The U-Net architecture has a encoder-decoder structure and skip connections. This helps to preserve spatial information, which are critical for building segmentation and damage patterns.
 
 
-**ResNet50** 
+**ResNet50**   
 The ResNet50 was chosen as an encoder. It has a high capability to extract features. A further advantage was the pre-trained backboned. The deep architecture of ResNet50 captures hirachical features that represent different aspect of buildin damage. 
 
 ## Dealing with class imbalances
 The xView2 dataset has high class imbalances. With more then 90% of all pixels depicting background and not buildings, 
 the class imbalances need to be taken into account.
 ### Focal Loss
-https://arxiv.org/pdf/1708.02002
+
+https://arxiv.org/pdf/1708.02002  
+
 Focal Loss as a Loss Function takes class imbalances into account and downweights the background and therefore focuses on the damage classes.
 This was done by weighting each class inversely proportional to its frequency in the dataset, using the alpha parameter to assign higher weights 
 to rare classes (buildings and damage categories) and 
@@ -136,8 +139,6 @@ lower weights to common classes (background). Additionally, the gamma parameter 
 further reduces the contribution of easily classified examples, allowing the model to focus on challenging cases like building boundaries 
 and subtle damage patterns.
  
-*** Note: Add a histogram of classes ?? ***
-
 ## Training
 Start the training process by changing the parameters of the configuration file (notebooks/00_config.ymal). Parameters are explained in the configuration file section. 
 
@@ -146,24 +147,24 @@ After this you have two options to run the training:
 
 All written outputs can be found here: 
 
-├── experiments/
-│   └── xView2_all_data/
-│       └── 002/
-│           ├── tensorboard_logs/
-│           ├── checkpoints/
-│           ├── logfiles/
+├── experiments/  
+│   └── xView2_all_data/  
+│       └── 002/  
+│           ├── tensorboard_logs/  
+│           ├── checkpoints/  
+│           ├── logfiles/  
 
-The precalculated class counts and weights are stored under
+The precalculated class counts and weights are stored under  
 
 ├── experiments/  
 │   ├── precalculations/  
 │   │   ├── class_counts.json  
-│   │   └── sample_weights.pt
+│   │   └── sample_weights.pt  
 
 
-The model is stored within the checkpoints directory under the filename: 002_best_siamese_unet_state.pth
+The model is stored within the checkpoints directory under the filename: 002_best_siamese_unet_state.pth  
 
-To run inference for this model use the file 03_inference.ipynb. More information about this file can be found in the following section Informations for users.
+To run inference for this model use the file 03_inference.ipynb. More information about this file can be found in the following section Informations for users.  
 
 # Informations for users
 
@@ -240,11 +241,12 @@ Model training ended after 7 Epochs:
 |Precision Training|0.7402|0.2822|
 |Precision Validation|0.7526|0.2959|
 |Recall Training|0.9537|0.4447|
-|Recall Validation|0.9583|0.4769
+|Recall Validation|0.9583|0.4769|
 
 Loss during Training was 0.0178 and during Validation 0.0164. See Image below
 
 ![Loss](graphics/Loss_Subset.png)
+
 
 
 ## Discussion
@@ -262,7 +264,23 @@ Loss during Training was 0.0178 and during Validation 0.0164. See Image below
 
 
 ## Improving the training process  
-To improve the performance the training should be run with the whole dataset (to the point of submission training is still running)  
+To improve the performance the training should be run with the whole dataset.
+
+
+To the point of submission training is still running and in Step 11:
+
+![FinalLoss](graphics/Loss_allData.png)
+
+|Parameter|Pre-Disaster|Post-Disaster|  
+|---------|------------|-------------|
+|F1-Score Training|0.8277| 0.4608|
+|F1-Score Validation |0.8384|0.4777|
+|Precision Training|0.7577|0.3869|
+|Precision Validation|0.7645|0.4036|
+|Recall Training|0.9793|0.8413|
+|Recall Validation|0.9805|0.8294|
+
+These preliminary results indicate a significant improvement within the post disaster Performance of the model. 
 
 The updated parameters can be found below:  
 
