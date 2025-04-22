@@ -64,7 +64,8 @@ So the Trainfolder contains 15148 images and the Validation folder 5052.
 │ ├── 📄 01_data_processing.py    
 │ ├── 📄 02_Training.cmd  
 │ ├── 📄 02_developer_main.py  
-│ ├── 📄 03_inference.ipynb     
+│ ├── 📄 03_inference.ipynb
+│ ├── 📄 tensor_link.py     
 ├── 📄 pyproject.toml   
 ├── 📄 README.md  
 
@@ -145,7 +146,7 @@ Start the training process by changing the parameters of the configuration file 
 After this you have two options to run the training: 
 02_Training.cmd as a slurm job or the 02_developer_main.py  
 
-All written outputs can be found here: 
+All written outputs can be found within the dataset directory: 
 
 ├── experiments/  
 │   └── xView2_all_data/  
@@ -154,7 +155,7 @@ All written outputs can be found here:
 │           ├── checkpoints/  
 │           ├── logfiles/  
 
-The precalculated class counts and weights are stored under  
+The precalculated class counts and weights are stored in the users home directory  
 
 ├── experiments/  
 │   ├── precalculations/  
