@@ -282,8 +282,14 @@ To the point of submission training is still running and in Step 11:
 |Recall Validation|0.9805|0.8294|
 
 These preliminary results indicate a significant improvement within the post disaster Performance of the model. 
+The updated parameters can be found below.
 
-The updated parameters can be found below:  
+**UPDATE 22-04-2025**
+The training ended after 22 Epochs.
+The loss can be found below:
+
+![Loss_all_data](graphics/Loss_all_Data_afterTraining.png)
+
 
 
 ### === Training Parameters ===  
