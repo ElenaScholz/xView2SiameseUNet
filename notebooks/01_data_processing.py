@@ -1,21 +1,21 @@
 from pathlib import Path
-import matplotlib.pyplot as plt
-from PIL import Image
-from shapely.wkt import loads
-import json
+import matplotlib.pyplot as plt # 📝 https://docs.astral.sh/ruff/rules/unused-import/
+from PIL import Image # 📝 https://docs.astral.sh/ruff/rules/unused-import/
+from shapely.wkt import loads # 📝 https://docs.astral.sh/ruff/rules/unused-import/
+import json # 📝 https://docs.astral.sh/ruff/rules/unused-import/
 import os
 import pandas as pd
-import rasterio as rio
-from rasterio.features import rasterize
-import geopandas as gpd
-import numpy as np
-from shapely import wkt
-from shapely import Polygon
-import numpy as np
+import rasterio as rio # 📝 https://docs.astral.sh/ruff/rules/unused-import/
+from rasterio.features import rasterize # 📝 https://docs.astral.sh/ruff/rules/unused-import/
+import geopandas as gpd # 📝 https://docs.astral.sh/ruff/rules/unused-import/
+import numpy as np # 📝 https://docs.astral.sh/ruff/rules/unused-import/
+from shapely import wkt # 📝 https://docs.astral.sh/ruff/rules/unused-import/
+from shapely import Polygon # 📝 https://docs.astral.sh/ruff/rules/unused-import/
+import numpy as np # 📝 https://docs.astral.sh/ruff/rules/unused-import/
 
 
 from utils.helperfunctions import get_data_folder
-from utils.preprocessing import extract_features, load_label_data, process_label_metadata, process_features, make_label_dictionary, geotiff_converter, create_disaster_targets
+from utils.preprocessing import extract_features, load_label_data, process_label_metadata, process_features, make_label_dictionary, geotiff_converter, create_disaster_targets # 📝 https://docs.astral.sh/ruff/rules/unused-import/
 
 ROOT = Path("/dss/dsstbyfs02/pn49ci/pn49ci-dss-0022")
 DATA_PATH = ROOT / "data"

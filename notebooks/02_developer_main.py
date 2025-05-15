@@ -1,5 +1,5 @@
-import gc
-import json
+import gc # 📝 https://docs.astral.sh/ruff/rules/unused-import/
+import json # 📝 https://docs.astral.sh/ruff/rules/unused-import/
 import torch.nn as nn
 import os
 from pathlib import Path
@@ -13,13 +13,13 @@ import yaml
 from utils.helperfunctions import get_data_folder
 from utils.dataset import xView2Dataset, collate_fn, transform, image_transform
 from model.siameseNetwork import SiameseUnet
-from model.uNet import UNet_ResNet50
-from model.loss import FocalLoss, combined_loss_function
+from model.uNet import UNet_ResNet50 # 📝 https://docs.astral.sh/ruff/rules/unused-import/
+from model.loss import FocalLoss, combined_loss_function # 📝 https://docs.astral.sh/ruff/rules/unused-import/
 from utils.training_preparations import calculate_class_counts,  save_class_counts, load_class_counts, get_sample_weights, save_sample_weights, load_sample_weights, calculate_class_weights
 from utils.train_step import train_step
 from utils.val_step import val_step
 # from utils.training_preparations import create_weighted_dataloader
-from torch.utils.data import WeightedRandomSampler
+from torch.utils.data import WeightedRandomSampler # 📝 https://docs.astral.sh/ruff/rules/unused-import/
 from utils.earlyStopping import EarlyStopping
 
 base_dir = Path(__file__).resolve().parent.parent

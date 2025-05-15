@@ -81,6 +81,8 @@ To set up the environment, simply run:
 module load uv
 uv sync
 ```
+📝 Cool, you really used `uv` as intended, well done! The `pyproject.toml` looks complete and I was able to rebuild the environment.
+
 ### Configuration file:
 | Key                               | Description                                                                 |
 |----------------------------------|-----------------------------------------------------------------------------|
@@ -124,7 +126,70 @@ The U-Net architecture has a encoder-decoder structure and skip connections. Thi
 
 
 **ResNet50**   
-The ResNet50 was chosen as an encoder. It has a high capability to extract features. A further advantage was the pre-trained backboned. The deep architecture of ResNet50 captures hirachical features that represent different aspect of buildin damage. 
+The ResNet50 was chosen as an encoder. It has a high capability to extract features. A further advantage was the pre-trained backbone. The deep architecture of ResNet50 captures hierarchical features that represent different aspect of building damage. 
+
+📝 Without having tested it on this use case, I have some feedback which you might consider about your architecture. Feel free to send me you thoughts about it back, maybe your architecture layout was intentional, would be interesting for me to know why.
+
+📝 The strength of a siamese U-Net is to learn features from shared weights. In your implementation you use, more or less, two separate U-Nets which only late after the decoder are fused. Thus the shared component is only represented in a very shallow two layer network of already decoded classification maps. With this layout, you lose the main strength of a siamese network, which is to learn features from shared weights at different levels of the network or at very deep levels of the network.
+
+📝 I propose the following architecture, which fuses the pre and post disaster images after the encoders and uses a unified decoder. Disclaimer, I have not tested it, just drafted the architecture upon your layout.
+
+```python
+#📝
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+import torchvision.models as models
+
+class SiameseUNet(nn.Module):
+    def __init__(self, num_pre_classes=2, num_post_classes=6):
+        super(SiameseUNet, self).__init__()
+
+        # Shared Encoder (ResNet50)
+        resnet = models.resnet50(weights='ResNet50_Weights.DEFAULT')
+
+        self.encoder = nn.Sequential(
+            resnet.conv1, 
+            resnet.bn1, 
+            resnet.relu, 
+            resnet.maxpool, 
+            resnet.layer1, 
+            resnet.layer2, 
+            resnet.layer3, 
+            resnet.layer4
+        )
+
+        # Unified Decoder
+        self.decoder = nn.Sequential(
+            nn.ConvTranspose2d(4096, 1024, kernel_size=2, stride=2),
+            nn.ReLU(),
+            nn.ConvTranspose2d(1024, 512, kernel_size=2, stride=2),
+            nn.ReLU(),
+            nn.ConvTranspose2d(512, 256, kernel_size=2, stride=2),
+            nn.ReLU(),
+            nn.ConvTranspose2d(256, 64, kernel_size=2, stride=2),
+            nn.ReLU()
+        )
+
+        # Final classification layer
+        self.final_conv = nn.Conv2d(64, num_pre_classes + num_post_classes, kernel_size=1)
+
+    def forward(self, pre_image, post_image):
+        # Encode both images using the shared encoder
+        pre_features = self.encoder(pre_image)
+        post_features = self.encoder(post_image)
+
+        # Concatenate encoder outputs
+        fused_features = torch.cat([pre_features, post_features], dim=1)
+
+        # Decode the fused features
+        decoded = self.decoder(fused_features)
+
+        # Final segmentation output
+        out = self.final_conv(decoded)
+
+        return out
+```
 
 ## Dealing with class imbalances
 The xView2 dataset has high class imbalances. With more then 90% of all pixels depicting background and not buildings, 
@@ -145,6 +210,8 @@ Start the training process by changing the parameters of the configuration file 
 
 After this you have two options to run the training: 
 02_Training.cmd as a slurm job or the 02_developer_main.py  
+
+⭐📝 Cool that you looked into `slurm`! I see that you used the templates from the terrabyte docu, very good. If you want to improve them, start with using `.slurm` as prefix instead of `.cmd`. I do not know why this is recommended in the terrabyte docu tbh... its weird to see this ending for such a file to me at least ;) 
 
 All written outputs can be found within the dataset directory: 
 
@@ -270,6 +337,8 @@ To improve the performance the training should be run with the whole dataset.
 
 To the point of submission training is still running and in Step 11:
 
+📝 I see, have you finished the training run? Do you have an update of the results?
+
 ![FinalLoss](graphics/Loss_allData.png)
 
 |Parameter|Pre-Disaster|Post-Disaster|  
@@ -290,7 +359,7 @@ The loss can be found below:
 
 ![Loss_all_data](graphics/Loss_all_Data_afterTraining.png)
 
-
+📝 :D Ok, the loss looks promising, do you have also an update of the metric table? Just curious.
 
 ### === Training Parameters ===  
 training:  
