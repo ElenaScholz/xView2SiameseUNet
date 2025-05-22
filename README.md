@@ -360,6 +360,14 @@ The loss can be found below:
 ![Loss_all_data](graphics/Loss_all_Data_afterTraining.png)
 
 📝 :D Ok, the loss looks promising, do you have also an update of the metric table? Just curious.
+|Parameter|Pre-Disaster|Post-Disaster|  
+|---------|------------|-------------|
+|F1-Score Training|0.8595| 0.4677|
+|F1-Score Validation |0.9711|0.4744|
+|Precision Training|0.7961|0.4041|
+|Precision Validation|0.8163|0.4135|
+|Recall Training|0.9792|0.784|
+|Recall Validation|0.8754|0.4744|
 
 ### === Training Parameters ===  
 training:  
